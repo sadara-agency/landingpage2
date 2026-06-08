@@ -11,9 +11,13 @@ import { dir } from '@/lib/i18n';
  */
 export function HtmlLangSync({ locale }: { locale: Locale }) {
   useEffect(() => {
-    const el = document.documentElement;
-    el.lang = locale;
-    el.dir = dir(locale);
+    const d = dir(locale);
+    const html = document.documentElement;
+    html.lang = locale;
+    html.dir = d;
+    // Also set dir on <body> so the font-family rules — which read the
+    // --font-* variables defined on <body> by next/font — resolve correctly.
+    document.body.dir = d;
   }, [locale]);
 
   return null;

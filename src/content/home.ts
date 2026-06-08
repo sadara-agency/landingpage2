@@ -1,5 +1,54 @@
 import type { Bi } from '@/lib/i18n';
 
+/* ── CAA-style homepage-as-navigation ──────────────────────────────────────
+   The home page IS the nav: three pillars (the SBUs) stacked; selecting one
+   reveals its child links inline. Also reused by the interior MegaNav overlay.
+   Mirrors the IA sitemap's What-We-Do depth. */
+export type HomePillarChild = { label: Bi; href: string };
+export type HomePillar = { key: string; label: Bi; href: string; children: HomePillarChild[] };
+
+export const homeThesis: Bi = {
+  ar: 'نصنع الفرص في كرة القدم.',
+  en: 'We create opportunity in football.',
+};
+
+export const homePillars: HomePillar[] = [
+  {
+    key: 'talent',
+    label: { ar: 'إدارة المواهب', en: 'Talent Management' },
+    href: '/talent',
+    children: [
+      { label: { ar: 'إيليت 360 — المنصّة', en: 'Elite 360 — the platform' }, href: '/talent/elite-360' },
+      { label: { ar: 'نظام الفئات', en: 'The Tier System' }, href: '/talent/tiers' },
+      { label: { ar: 'الخدمات', en: 'Services' }, href: '/talent/services' },
+      { label: { ar: 'للّاعبين والعائلات', en: 'For Athletes & Families' }, href: '/talent/join' },
+    ],
+  },
+  {
+    key: 'advisory',
+    label: { ar: 'استشارات الأندية والاتحادات', en: 'Club & Federation Advisory' },
+    href: '/advisory',
+    children: [
+      { label: { ar: 'نظام ذكاء الأندية', en: 'Club Intelligence System' }, href: '/advisory/intelligence' },
+      { label: { ar: 'تقييم المدربين والإدارة', en: 'Coach & Management Evaluation' }, href: '/advisory/coaching' },
+      { label: { ar: 'التوظيف واستراتيجية التشكيلة', en: 'Recruitment & Squad Strategy' }, href: '/advisory/recruitment' },
+      { label: { ar: 'التحليل التنافسي والأكاديميات', en: 'Competitive & Academy Advisory' }, href: '/advisory/analysis' },
+      { label: { ar: 'للأندية والاتحادات', en: 'For Clubs & Federations' }, href: '/advisory/engage' },
+    ],
+  },
+  {
+    key: 'markets',
+    label: { ar: 'الأسواق والشراكات', en: 'Markets & Partnerships' },
+    href: '/markets',
+    children: [
+      { label: { ar: 'مكتب صفقات الدوري', en: 'The SPL Deal Desk' }, href: '/markets/deal-desk' },
+      { label: { ar: 'الشراكات المؤسسية', en: 'Corporate Partnerships' }, href: '/markets/partnerships' },
+      { label: { ar: 'الشبكة العالمية', en: 'The Global Network' }, href: '/markets/network' },
+      { label: { ar: 'للشركات والوكلاء', en: 'For Corporates & Agents' }, href: '/markets/connect' },
+    ],
+  },
+];
+
 export const hero = {
   kicker: { ar: 'مؤسسة، لا وكالة', en: 'An institution, not an agency' } as Bi,
   // The thesis line — word-lit on scroll.

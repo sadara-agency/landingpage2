@@ -1,8 +1,7 @@
 import type { Locale } from '@/lib/i18n';
 import { pick, type Bi } from '@/lib/i18n';
 import { PageHero } from './PageHero';
-import { FeatureGrid, CTASection, type Feature } from './Blocks';
-import { Reveal } from '@/components/motion/Reveal';
+import { FeatureGrid, SplitBand, StatBand, CTASection, type Feature, type Stat } from './Blocks';
 import { images } from '@/content/images';
 
 /* FROZEN — talent.ts / advisory.ts / markets.ts conform to this. */
@@ -15,6 +14,8 @@ export type DivisionData = {
   proposition: { title: Bi; body: Bi };
   modules: Feature[];
   modulesHeader: { kicker: Bi; title: Bi; lead: Bi };
+  /** Optional proof band — falls back to nothing if absent. */
+  stats?: Stat[];
   cta: { title: Bi; lead: Bi; primary: { label: Bi; href: string }; secondary?: { label: Bi; href: string } };
 };
 
@@ -40,16 +41,22 @@ export function DivisionOverview({ locale, data, parentLabel }: { locale: Locale
         ]}
       />
 
-      <section className="border-t border-hairline bg-paper py-20 md:py-28">
-        <div className="wrap grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
-          <Reveal>
-            <h2 className="text-h2 font-extrabold text-ink">{tr(data.proposition.title)}</h2>
-          </Reveal>
-          <Reveal delay={0.08}>
-            <p className="text-lead text-muted">{tr(data.proposition.body)}</p>
-          </Reveal>
-        </div>
-      </section>
+      {/* "Be legendary." proposition. Label uses the unit name from the kicker
+          (e.g. "Unit 01 · Talent Management"), not the long page title. */}
+      <SplitBand
+        locale={locale}
+        kicker={tr(data.kicker)}
+        title={tr(data.proposition.title)}
+        body={tr(data.proposition.body)}
+      />
+
+      {data.stats && data.stats.length > 0 && (
+        <StatBand
+          locale={locale}
+          kicker={locale === 'ar' ? 'نتائجنا تتحدّث عنّا' : "Our results speak for themselves"}
+          stats={data.stats}
+        />
+      )}
 
       <FeatureGrid
         locale={locale}

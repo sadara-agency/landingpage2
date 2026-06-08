@@ -2,7 +2,7 @@ import Link from 'next/link';
 import type { Locale } from '@/lib/i18n';
 import { localeHref, pick, type Bi } from '@/lib/i18n';
 import { Reveal, RevealGroup, RevealItem } from '@/components/motion/Reveal';
-import { SectionHeader } from '@/components/ui/SectionHeader';
+import { CountUp } from '@/components/motion/CountUp';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/cn';
 
@@ -34,18 +34,24 @@ export function FeatureGrid({
   const cols = { 2: 'md:grid-cols-2', 3: 'md:grid-cols-3', 4: 'md:grid-cols-2 lg:grid-cols-4' }[columns];
 
   return (
-    <section className="border-t border-hairline bg-paper py-20 md:py-28">
+    <section className="bg-paper py-20 md:py-28">
       <div className="wrap">
-        {(title || kicker) && <SectionHeader kicker={kicker} title={title ?? ''} lead={lead} className="mb-14" />}
-        <RevealGroup className={cn('grid gap-px overflow-hidden rounded-card border border-hairline bg-hairline', cols)}>
+        {(title || kicker) && (
+          <div className="mb-14 max-w-3xl">
+            {kicker && <span className="section-label mb-10">{kicker}</span>}
+            {title && <h2 className="text-h2 font-extrabold text-ink">{title}</h2>}
+            {lead && <p className="mt-5 text-lead text-muted">{lead}</p>}
+          </div>
+        )}
+        <RevealGroup className={cn('grid gap-px overflow-hidden border-y border-hairline bg-hairline', cols)}>
           {features.map((f, i) => {
             const inner = (
               <div className="group relative flex h-full flex-col bg-paper p-7 transition-colors duration-300 hover:bg-canvas">
-                {f.no && <span className="font-mono text-sm text-faint">{f.no}</span>}
-                <h3 className="mt-4 text-h3 font-bold text-ink">{tr(f.title)}</h3>
+                <span className="font-mono text-sm text-faint">{f.no ?? String(i + 1).padStart(2, '0')}</span>
+                <h3 className="mt-5 text-h3 font-bold text-ink transition-colors group-hover:text-electric">{tr(f.title)}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-muted">{tr(f.desc)}</p>
                 {f.href && (
-                  <span className="mt-auto inline-flex items-center gap-2 pt-7 text-sm font-medium text-electric">
+                  <span className="mt-auto inline-flex items-center gap-2 pt-8 text-sm font-medium text-electric">
                     {f.cta ? tr(f.cta) : locale === 'ar' ? 'اعرف المزيد' : 'Learn more'}
                     <span className="inline-block transition-transform group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1">→</span>
                   </span>
@@ -70,6 +76,8 @@ export function FeatureGrid({
   );
 }
 
+/* CAA "Be legendary." pattern — light band, mono section-label + hairline rule,
+   a big accent display headline on the start side, body copy on the end side. */
 export function SplitBand({
   locale,
   kicker,
@@ -79,7 +87,6 @@ export function SplitBand({
   reverse = false,
   tone = 'dark',
   cta,
-  image,
 }: {
   locale: Locale;
   kicker?: string;
@@ -89,30 +96,22 @@ export function SplitBand({
   reverse?: boolean;
   tone?: 'dark' | 'electric';
   cta?: { label: string; href: string };
-  image?: string;
 }) {
   const tr = pick(locale);
   const paras = Array.isArray(body) ? body : [body];
 
   return (
-    <section className="border-t border-hairline bg-paper py-20 md:py-28">
+    <section className="bg-paper py-20 md:py-28">
       <div className="wrap">
-        <div className={cn('grid items-center gap-12 lg:grid-cols-2', reverse && 'lg:[&>*:first-child]:order-2')}>
+        {kicker && <span className="section-label mb-16">{kicker}</span>}
+        <div className={cn('grid gap-x-16 gap-y-8 lg:grid-cols-2', reverse && 'lg:[&>*:first-child]:order-2')}>
           <Reveal direction={reverse ? 'end' : 'start'}>
-            <div className="relative aspect-[4/3] overflow-hidden rounded-card border border-hairline bg-canvas">
-              {image ? (
-                <img src={image} alt="" className="h-full w-full object-cover" />
-              ) : (
-                <div className={cn('absolute inset-0', tone === 'electric' ? 'bg-electric/10' : 'bg-canvas-2')} />
-              )}
-            </div>
+            <h2 className="text-display font-extrabold text-electric">{title}</h2>
           </Reveal>
           <Reveal direction={reverse ? 'start' : 'end'} delay={0.08}>
             <div>
-              {kicker && <span className="kicker">{kicker}</span>}
-              <h2 className="mt-4 text-h2 font-extrabold text-ink">{title}</h2>
               {paras.map((p, i) => (
-                <p key={i} className="mt-5 text-lead text-muted">
+                <p key={i} className={cn('text-lead text-ink/80', i > 0 && 'mt-6')}>
                   {p}
                 </p>
               ))}
@@ -139,6 +138,75 @@ export function SplitBand({
   );
 }
 
+/* CAA "107 / First-round draft picks since 2011" — navy band, one giant electric
+   number on the start side, hairline-divided supporting stat rows on the end. */
+export type Stat = {
+  value: number;
+  label: Bi;
+  prefix?: string;
+  suffix?: string;
+  decimals?: number;
+  grouping?: boolean;
+};
+
+export function StatBand({
+  locale,
+  kicker,
+  title,
+  stats,
+}: {
+  locale: Locale;
+  kicker?: string;
+  title?: string;
+  stats: Stat[];
+}) {
+  const tr = pick(locale);
+  const [lead, ...rest] = stats;
+  const rows = rest.length > 0 ? rest : stats;
+
+  return (
+    <section className="bg-navy py-24 text-white md:py-32">
+      <div className="wrap">
+        {(kicker || title) && (
+          <div className="mb-14 max-w-3xl">
+            {kicker && <span className="section-label mb-10 border-white/15 text-white/55">{kicker}</span>}
+            {title && <h2 className="text-h2 font-extrabold text-white">{title}</h2>}
+          </div>
+        )}
+        <div className="grid items-start gap-12 lg:grid-cols-[0.8fr_1.2fr]">
+          <Reveal>
+            <div>
+              <div className="text-[clamp(5rem,11vw,9.5rem)] font-extrabold leading-[0.85] tracking-[-0.04em] text-electric-hi">
+                <CountUp
+                  value={lead.value}
+                  prefix={lead.prefix}
+                  suffix={lead.suffix}
+                  decimals={lead.decimals ?? 0}
+                  grouping={lead.grouping ?? true}
+                />
+              </div>
+              <p className="mt-6 max-w-xs text-lead text-white/70">{tr(lead.label)}</p>
+            </div>
+          </Reveal>
+          <RevealGroup className="flex flex-col">
+            {rows.map((s, i) => (
+              <RevealItem key={i}>
+                <div className="flex items-baseline gap-6 border-t border-white/12 py-6">
+                  <span className="min-w-[120px] text-h2 font-extrabold tracking-tight text-electric-hi">
+                    <CountUp value={s.value} prefix={s.prefix} suffix={s.suffix} decimals={s.decimals ?? 0} grouping={s.grouping ?? true} />
+                  </span>
+                  <span className="text-lead font-medium text-white">{tr(s.label)}</span>
+                </div>
+              </RevealItem>
+            ))}
+          </RevealGroup>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* CAA "Building your brand." CTA — navy band, big headline, accent buttons. */
 export function CTASection({
   locale,
   title,
@@ -153,10 +221,10 @@ export function CTASection({
   secondary?: { label: string; href: string };
 }) {
   return (
-    <section className="border-t border-hairline bg-ink py-24 text-paper md:py-32">
+    <section className="bg-navy py-24 text-paper md:py-32">
       <div className="wrap text-center">
         <Reveal>
-          <h2 className="mx-auto max-w-3xl text-h2 font-extrabold text-white">{title}</h2>
+          <h2 className="mx-auto max-w-3xl text-display font-extrabold text-white">{title}</h2>
         </Reveal>
         {lead && (
           <Reveal delay={0.08}>
@@ -182,7 +250,7 @@ export function CTASection({
 
 export function Prose({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <section className="border-t border-hairline bg-paper py-16 md:py-24">
+    <section className="bg-paper py-16 md:py-24">
       <div className="wrap">
         <Reveal className={cn('max-w-prose space-y-6 text-[15px] leading-relaxed text-muted', className)}>{children}</Reveal>
       </div>

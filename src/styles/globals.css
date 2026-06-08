@@ -3,6 +3,9 @@
 @tailwind utilities;
 
 :root {
+  --navy: #11132b;
+  --navy-deep: #0b0d1f;
+  --navy-soft: #1a1d3a;
   --paper: #ffffff;
   --canvas: #f7f7f4;
   --canvas-2: #efefea;
@@ -27,12 +30,15 @@
     background: var(--paper);
     color: var(--ink);
     overflow-x: hidden;
+    /* Default to the Latin face; HtmlLangSync flips dir on <body> for Arabic.
+       The --font-* vars are defined on <body> by next/font, so the family must
+       be applied to <body> (a var() on <html> would be out of scope). */
+    font-family: var(--font-en), system-ui, sans-serif;
   }
-  /* dir + font set ONLY on the [locale] wrapper via HtmlLangSync. */
-  [dir='rtl'] {
+  body[dir='rtl'] {
     font-family: var(--font-ar), system-ui, sans-serif;
   }
-  [dir='ltr'] {
+  body[dir='ltr'] {
     font-family: var(--font-en), system-ui, sans-serif;
   }
   ::selection {
@@ -50,6 +56,14 @@
     @apply inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-electric;
   }
   [dir='rtl'] .kicker {
+    @apply tracking-normal;
+  }
+  /* CAA "About CAA Football" eyebrow — mono label with a hairline rule beneath,
+     spanning the content column. On navy bands, override color with text-white/X. */
+  .section-label {
+    @apply block border-b border-hairline pb-4 font-mono text-[11px] uppercase tracking-[0.22em] text-muted;
+  }
+  [dir='rtl'] .section-label {
     @apply tracking-normal;
   }
   .hairline {

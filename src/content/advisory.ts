@@ -25,6 +25,12 @@ export const advisoryDivision: DivisionData = {
       en: 'Each capability is retained and standalone, yet draws on the same intelligence and network that serves the rest of the institution.',
     },
   },
+  stats: [
+    { value: 9, label: { ar: 'أندية واتحادات في إطار استشاري', en: 'Clubs & federations under advisory' } },
+    { value: 360, label: { ar: 'درجة من ذكاء القرار', en: 'Degrees of decision intelligence' } },
+    { value: 5, label: { ar: 'أطر تقييم للقدرات', en: 'Capability evaluation frameworks' } },
+    { value: 2034, grouping: false, label: { ar: 'أفق كأس العالم', en: 'The World Cup horizon' } },
+  ],
   modules: [
     { no: '01', title: { ar: 'نظام ذكاء الأندية', en: 'Club Intelligence System' }, desc: { ar: 'ذكاء العلاقات والقرار — مُحتجَز.', en: 'Relationship & decision intelligence — retained.' }, href: '/advisory/intelligence' },
     { no: '02', title: { ar: 'تقييم المدربين والإدارة', en: 'Coach & Management Evaluation' }, desc: { ar: 'أُطر القدرات وتسجيل المرشّحين.', en: 'Capability frameworks and candidate scoring.' }, href: '/advisory/coaching' },

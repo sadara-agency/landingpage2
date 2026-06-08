@@ -1,33 +1,38 @@
-// Curated Unsplash photography for the photography-led CAA register.
+// Football-led Unsplash placeholders for the photography-led CAA register.
 // Centralized + typed so real Sadara assets can replace these in one place.
+//
+// TODO(content): Replace ALL of these with real Sadara photography before
+// go-live. The CAA look depends heavily on photo quality. Keys to supply:
+// homeHero (unused on home now — kept for future), pageHero.* (one per
+// section), per-athlete portraits keyed by slug, athleteDefault, article cards.
 
 export const images = {
-  homeHero: 'https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?w=1920&q=75',
+  homeHero: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=1920&q=75',
   pageHero: {
-    institution: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=1600&q=72',
-    talent: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1600&q=72',
-    advisory: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?w=1600&q=72',
-    markets: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1600&q=72',
-    athletes: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1600&q=72',
-    insights: 'https://images.unsplash.com/photo-1556056504-5c7696c4c28d?w=1600&q=72',
-    network: 'https://images.unsplash.com/photo-1505842465776-3d90f616310d?w=1600&q=72',
-    careers: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1600&q=72',
-    contact: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1600&q=72',
-    default: 'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=1600&q=72',
+    institution: 'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=1600&q=72', // stadium
+    talent: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1600&q=72', // football training
+    advisory: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?w=1600&q=72', // pitch / play
+    markets: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1600&q=72', // ball on pitch
+    athletes: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=1600&q=72', // stadium crowd
+    insights: 'https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=1600&q=72', // football close
+    network: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1600&q=72', // boot + ball
+    careers: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=1600&q=72', // team
+    contact: 'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=1600&q=72',
+    default: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1600&q=72',
   },
   // Per-athlete-slug portrait. Falls back to `athleteDefault` when a slug is absent.
   athletes: {
     'hammam-al-hammami': 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1000&q=75',
   } as Record<string, string>,
-  athleteDefault: 'https://images.unsplash.com/photo-1518604666860-9ed391f76460?w=1000&q=72',
+  athleteDefault: 'https://images.unsplash.com/photo-1526232761682-d26e03ac148e?w=1000&q=72',
   // Insights/news cards — indexed by position in the articles array.
   articles: [
-    'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=900&q=72',
+    'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=900&q=72',
     'https://images.unsplash.com/photo-1551958219-acbc608c6377?w=900&q=72',
     'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=900&q=72',
-    'https://images.unsplash.com/photo-1556056504-5c7696c4c28d?w=900&q=72',
-    'https://images.unsplash.com/photo-1505842465776-3d90f616310d?w=900&q=72',
-    'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=900&q=72',
+    'https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=900&q=72',
+    'https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=900&q=72',
+    'https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=900&q=72',
   ] as string[],
 };
 

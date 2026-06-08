@@ -2,9 +2,12 @@ import Link from 'next/link';
 import type { Locale } from '@/lib/i18n';
 import { localeHref } from '@/lib/i18n';
 import { images } from '@/content/images';
+import { KenBurns } from '@/components/motion/KenBurns';
 
 type Crumb = { label: string; href?: string };
 
+/* CAA sport-page hero — full-viewport dark photo, Ken Burns zoom, bottom scrim,
+   giant display title anchored to the bottom-start. */
 export function PageHero({
   locale,
   kicker,
@@ -24,12 +27,12 @@ export function PageHero({
 }) {
   const src = image ?? images.pageHero.default;
   return (
-    <section className="relative isolate overflow-hidden bg-ink pt-[var(--header-h)] text-paper">
-      <img src={src} alt="" className="absolute inset-0 -z-10 h-full w-full object-cover opacity-90" />
+    <section className="relative isolate flex min-h-[88svh] items-end overflow-hidden bg-navy pt-[var(--header-h)] text-paper">
+      <KenBurns src={src} className="-z-20 opacity-90" />
       <div className="photo-scrim absolute inset-0 -z-10" aria-hidden="true" />
-      <div className="wrap relative flex min-h-[42vh] flex-col justify-end py-16 md:min-h-[48vh] md:py-24">
+      <div className="wrap relative w-full pb-16 md:pb-24">
         {crumbs && crumbs.length > 0 && (
-          <nav className="mb-6 flex flex-wrap items-center gap-2 font-mono text-xs text-white/60" aria-label="Breadcrumb">
+          <nav className="mb-7 flex flex-wrap items-center gap-2 font-mono text-xs text-white/60" aria-label="Breadcrumb">
             {crumbs.map((c, i) => (
               <span key={i} className="flex items-center gap-2">
                 {c.href ? (
@@ -44,10 +47,12 @@ export function PageHero({
             ))}
           </nav>
         )}
-        <div className={align === 'center' ? 'mx-auto max-w-3xl text-center' : 'max-w-3xl'}>
-          {kicker && <span className={align === 'center' ? 'kicker justify-center text-electric-hi' : 'kicker text-electric-hi'}>{kicker}</span>}
-          <h1 className="mt-4 text-h1 font-extrabold text-white">{title}</h1>
-          {lead && <p className="mt-6 text-lead text-white/80">{lead}</p>}
+        <div className={align === 'center' ? 'mx-auto max-w-4xl text-center' : 'max-w-5xl'}>
+          {kicker && (
+            <span className={align === 'center' ? 'kicker justify-center text-electric-hi' : 'kicker text-electric-hi'}>{kicker}</span>
+          )}
+          <h1 className="mt-5 text-display font-extrabold text-white">{title}</h1>
+          {lead && <p className="mt-7 max-w-2xl text-lead text-white/80">{lead}</p>}
         </div>
       </div>
     </section>

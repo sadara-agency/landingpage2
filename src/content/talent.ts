@@ -25,6 +25,12 @@ export const talentDivision: DivisionData = {
       en: 'Every athlete enters a clear system of development and representation — not scattered services but an integrated operating model.',
     },
   },
+  stats: [
+    { value: 42, label: { ar: 'استدعاءات للمنتخبات منذ 2023', en: 'National-team call-ups since 2023' } },
+    { value: 4, label: { ar: 'مسارات تطوير متزامنة', en: 'Synchronized development tracks' } },
+    { value: 3.4, decimals: 1, suffix: '×', label: { ar: 'متوسّط نمو القيمة السوقية', en: 'Avg. market-value growth' } },
+    { value: 18, label: { ar: 'لاعباً في القائمة المنتقاة', en: 'Athletes on the curated roster' } },
+  ],
   modules: [
     { no: '01', title: { ar: 'Elite 360 — المنصة', en: 'Elite 360 — the platform' }, desc: { ar: 'نظام التطوير والمسارات الأربعة الذي يحوّل البيانات إلى قرارات.', en: 'The development system and four tracks that turn data into decisions.' }, href: '/talent/elite-360' },
     { no: '02', title: { ar: 'نظام الفئات', en: 'The tier system' }, desc: { ar: 'A+ / A / B+ / B وحزمة A+ Elite — تمثيل متدرّج حسب المرحلة.', en: 'A+ / A / B+ / B and the A+ Elite bundle — representation tiered by stage.' }, href: '/talent/tiers' },

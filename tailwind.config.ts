@@ -5,7 +5,10 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // CAA light register — paper surfaces, ink text, one electric accent.
+        // CAA-faithful register: navy takes CAA's bold "crimson" slot (full-bleed
+        // home + dark bands); electric blue is the action accent; paper/ink for
+        // the light editorial interior.
+        navy: { DEFAULT: '#11132B', deep: '#0B0D1F', soft: '#1A1D3A' },
         paper: '#FFFFFF',
         canvas: { DEFAULT: '#F7F7F4', 2: '#EFEFEA' },
         ink: { DEFAULT: '#0A0A0F', soft: '#16161D' },
@@ -23,12 +26,15 @@ const config: Config = {
         mono: ['var(--font-mono)', 'ui-monospace', 'monospace'],
       },
       fontSize: {
-        // Oversized, tight-tracked editorial scale.
-        display: ['clamp(3rem, 6vw, 5.5rem)', { lineHeight: '0.96', letterSpacing: '-0.04em' }],
+        // Oversized, tight-tracked editorial scale (CAA register).
+        display: ['clamp(3rem, 6.5vw, 6rem)', { lineHeight: '0.95', letterSpacing: '-0.04em' }],
         h1: ['clamp(2.25rem, 4.5vw, 3.5rem)', { lineHeight: '1.0', letterSpacing: '-0.03em' }],
         h2: ['clamp(1.6rem, 3vw, 2.4rem)', { lineHeight: '1.06', letterSpacing: '-0.025em' }],
         h3: ['clamp(1.25rem, 2vw, 1.6rem)', { lineHeight: '1.18', letterSpacing: '-0.015em' }],
         lead: ['clamp(1.05rem, 1.4vw, 1.3rem)', { lineHeight: '1.6' }],
+        // CAA homepage pillar headlines (For Talent / For Brands / For Enterprise).
+        pillar: ['clamp(2.4rem, 5.5vw, 4.75rem)', { lineHeight: '1.02', letterSpacing: '-0.04em' }],
+        'pillar-sm': ['clamp(2rem, 4vw, 3.25rem)', { lineHeight: '1.04', letterSpacing: '-0.04em' }],
       },
       maxWidth: { wrap: '1280px', prose: '68ch' },
       borderRadius: { card: '10px' },

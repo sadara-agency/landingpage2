@@ -25,6 +25,12 @@ export const marketsDivision: DivisionData = {
       en: 'Three commercial capabilities drawing on the same intelligence and relationships the rest of the institution builds.',
     },
   },
+  stats: [
+    { value: 8, label: { ar: 'ممرات عالمية نشطة', en: 'Active global corridors' } },
+    { value: 120, suffix: '+', label: { ar: 'وكيلاً وشريكاً في الشبكة', en: 'Agents & partners in the network' } },
+    { value: 4, label: { ar: 'قطاعات شراكة مؤسسية', en: 'Corporate partnership sectors' } },
+    { value: 1, label: { ar: 'مكتب صفقات للدوري السعودي', en: 'Deal desk for the SPL' } },
+  ],
   modules: [
     { no: '01', title: { ar: 'مكتب صفقات الدوري السعودي', en: 'The SPL Deal Desk' }, desc: { ar: 'توطين الأصول الأجنبية الواردة في أندية الدوري السعودي.', en: 'Inbound foreign-asset placement into SPL clubs.' }, href: '/markets/deal-desk' },
     { no: '02', title: { ar: 'الشراكات المؤسسية', en: 'Corporate Partnerships' }, desc: { ar: 'الرعاية، حقوق التسمية، والاستشارات التجارية.', en: 'Sponsorship, naming, and commercial consulting.' }, href: '/markets/partnerships' },
