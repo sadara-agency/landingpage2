@@ -36,7 +36,7 @@ export function Logo({
   const wordSize = size === 'lg' ? 'text-[20px]' : 'text-[15px]';
   const subSize = size === 'lg' ? 'text-[13px]' : 'text-[11px]';
   return (
-    <span className={cn('inline-flex items-center gap-2.5', className)}>
+    <span dir="ltr" className={cn('inline-flex items-center gap-2.5', className)}>
       <LogoIcon className={cn(iconSize, mark)} />
       {withWordmark && (
         <span className="flex flex-col leading-none">

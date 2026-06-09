@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import { Inter_Tight, JetBrains_Mono } from 'next/font/google';
 import { OrganizationJsonLd } from '@/components/layout/JsonLd';
+import { CustomCursor } from '@/components/layout/CustomCursor';
 import '@/styles/globals.css';
 
 const ibmPlexArabic = localFont({
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html suppressHydrationWarning>
       <body className={`${ibmPlexArabic.variable} ${interTight.variable} ${jetbrainsMono.variable}`}>
         <OrganizationJsonLd />
+        <CustomCursor />
         {children}
       </body>
     </html>

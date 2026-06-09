@@ -224,7 +224,7 @@ export function CTASection({
     <section className="bg-navy py-24 text-paper md:py-32">
       <div className="wrap text-center">
         <Reveal>
-          <h2 className="mx-auto max-w-3xl text-display font-extrabold text-white">{title}</h2>
+          <h2 className="mx-auto max-w-3xl text-balance text-display font-extrabold text-white">{title}</h2>
         </Reveal>
         {lead && (
           <Reveal delay={0.08}>

@@ -10,7 +10,7 @@ export function HomeHero({ locale }: { locale: Locale }) {
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-0"
-        style={{ background: 'radial-gradient(ellipse 80% 60% at 75% 50%, rgba(30,35,55,0.6), transparent)' }}
+        style={{ background: 'radial-gradient(ellipse 100% 80% at 70% 40%, rgba(30,35,55,0.5), transparent 100%)' }}
       />
 
       {/* CAA layout: pillar block starts at ~32% from top, 24% from the start edge (RTL-safe) */}

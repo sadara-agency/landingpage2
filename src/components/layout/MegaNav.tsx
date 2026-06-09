@@ -46,8 +46,8 @@ export function MegaNav({ locale, open, onClose }: { locale: Locale; open: boole
       {/* Atmospheric electric glow (the only flourish). */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute end-0 top-0 -z-0 h-[60%] w-[55%] opacity-60"
-        style={{ background: 'radial-gradient(circle at 70% 25%, rgba(22,41,226,0.30), transparent 70%)' }}
+        className="pointer-events-none absolute inset-0 -z-0"
+        style={{ background: 'radial-gradient(ellipse 70% 55% at 75% 20%, rgba(22,41,226,0.28), transparent 100%)' }}
       />
 
       {/* Overlay header — mirrors the page header, with a close button. */}
