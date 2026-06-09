@@ -12,13 +12,13 @@ export const images = {
     institution: 'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=1600&q=72', // stadium
     talent: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1600&q=72', // football training
     advisory: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?w=1600&q=72', // pitch / play
-    markets: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1600&q=72', // ball on pitch
+    markets: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?w=1600&q=72', // pitch / play
     athletes: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=1600&q=72', // stadium crowd
     insights: 'https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=1600&q=72', // football close
     network: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1600&q=72', // boot + ball
     careers: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=1600&q=72', // team
     contact: 'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=1600&q=72',
-    default: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1600&q=72',
+    default: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?w=1600&q=72',
   },
   // Per-athlete-slug portrait. Falls back to `athleteDefault` when a slug is absent.
   athletes: {
