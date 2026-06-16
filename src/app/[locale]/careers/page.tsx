@@ -3,12 +3,12 @@ import type { Metadata } from 'next';
 import { isLocale, type Locale, pick } from '@/lib/i18n';
 import { PageHero } from '@/components/sections/PageHero';
 import { FeatureGrid, CTASection } from '@/components/sections/Blocks';
-import { careersHub } from '@/content/careers';
-import { images } from '@/content/images';
+import { getDoc } from '@/lib/content';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const tr = pick(isLocale(locale) ? locale : 'en');
+  const { careersHub } = await getDoc('careers');
   return { title: tr(careersHub.title), description: tr(careersHub.lead) };
 }
 
@@ -17,6 +17,8 @@ export default async function CareersPage({ params }: { params: Promise<{ locale
   if (!isLocale(locale)) notFound();
   const loc = locale as Locale;
   const tr = pick(loc);
+  const { careersHub } = await getDoc('careers');
+  const images = (await getDoc('images')).images;
 
   const features = [
     {

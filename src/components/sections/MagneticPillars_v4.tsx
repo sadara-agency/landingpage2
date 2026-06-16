@@ -5,8 +5,7 @@ import Link from 'next/link';
 import { motion, useMotionValue, useSpring, useReducedMotion } from 'framer-motion';
 import type { Locale } from '@/lib/i18n';
 import { localeHref, pick } from '@/lib/i18n';
-import { homePillars } from '@/content/home';
-import { navItems } from '@/content/nav';
+import { useNavData } from '@/components/layout/NavDataContext';
 import { cn } from '@/lib/cn';
 
 const EASE_OUT_EXPO = [0.22, 1, 0.36, 1] as const;
@@ -22,6 +21,7 @@ const secondaryHrefs = ['/institution', '/athletes', '/insights', '/network', '/
  */
 export function MagneticPillars_v4({ locale }: { locale: Locale }) {
   const tr = pick(locale);
+  const { homePillars, navItems } = useNavData();
   const [active, setActive] = useState<string | null>(null);
   const reduce = useReducedMotion();
 

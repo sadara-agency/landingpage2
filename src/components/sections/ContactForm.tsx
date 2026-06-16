@@ -4,19 +4,33 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Locale } from '@/lib/i18n';
 import { pick } from '@/lib/i18n';
-import { routes, form, office } from '@/content/contact';
+import type { routes as Routes, form as Form, office as Office } from '@/content/contact';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/cn';
 import { EASE } from '@/lib/motion';
 
 type Field = 'name' | 'email' | 'message';
 
-export function ContactForm({ locale, defaultRoute }: { locale: Locale; defaultRoute?: string }) {
+export function ContactForm({
+  locale,
+  defaultRoute,
+  routes,
+  form,
+  office,
+}: {
+  locale: Locale;
+  defaultRoute?: string;
+  routes: typeof Routes;
+  form: typeof Form;
+  office: typeof Office;
+}) {
   const tr = pick(locale);
   const [route, setRoute] = useState<string>(defaultRoute ?? routes[0].key);
   const [values, setValues] = useState({ name: '', email: '', org: '', message: '' });
   const [touched, setTouched] = useState<Record<Field, boolean>>({ name: false, email: false, message: false });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const errors: Record<Field, string | null> = {
     name: values.name.trim() ? null : tr(form.required),
@@ -29,12 +43,25 @@ export function ContactForm({ locale, defaultRoute }: { locale: Locale; defaultR
   };
   const isValid = !errors.name && !errors.email && !errors.message;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setTouched({ name: true, email: true, message: true });
-    if (!isValid) return;
-    // No backend yet — surface a success state (deferred per plan).
-    setSubmitted(true);
+    if (!isValid || sending) return;
+    setSending(true);
+    setServerError(null);
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ ...values, route }),
+      });
+      if (!res.ok) throw new Error('failed');
+      setSubmitted(true);
+    } catch {
+      setServerError(locale === 'ar' ? 'تعذّر الإرسال. حاول مرة أخرى.' : 'Could not send. Please try again.');
+    } finally {
+      setSending(false);
+    }
   };
 
   if (submitted) {
@@ -129,10 +156,11 @@ export function ContactForm({ locale, defaultRoute }: { locale: Locale; defaultR
         <p className="font-mono text-xs text-faint">
           {tr(office.city)} · {office.email}
         </p>
-        <Button variant="primary" size="lg" disabled={!isValid} className={cn(!isValid && 'cursor-not-allowed')}>
+        <Button variant="primary" size="lg" disabled={!isValid || sending} className={cn((!isValid || sending) && 'cursor-not-allowed')}>
           {tr(form.submit)}
         </Button>
       </div>
+      {serverError && <p className="mt-4 text-sm text-danger">{serverError}</p>}
     </form>
   );
 }

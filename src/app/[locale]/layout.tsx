@@ -5,10 +5,16 @@ import { HtmlLangSync } from '@/components/layout/HtmlLangSync';
 import { Nav } from '@/components/layout/Nav';
 import { Footer } from '@/components/layout/Footer';
 import { PageTransition } from '@/components/layout/PageTransition';
+import { NavDataProvider } from '@/components/layout/NavDataContext';
+import { getDoc } from '@/lib/content';
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
+
+// ISR: pages are statically rendered and re-validated. Admin saves also trigger
+// an on-demand revalidate via /api/revalidate for near-instant updates.
+export const revalidate = 3600;
 
 export async function generateMetadata({
   params,
@@ -49,14 +55,22 @@ export default async function LocaleLayout({
   if (!isLocale(locale)) notFound();
   const loc = locale as Locale;
 
+  // Content sourced from Supabase (with in-repo fallback) and shared with the
+  // client nav components via context — no prop-drilling.
+  const [nav, home, institution] = await Promise.all([
+    getDoc('nav'),
+    getDoc('home'),
+    getDoc('institution'),
+  ]);
+
   return (
-    <>
+    <NavDataProvider value={{ navItems: nav.navItems, cta: nav.cta, homePillars: home.homePillars }}>
       {/* HtmlLangSync syncs lang/dir on client-side navigations between locales */}
       <HtmlLangSync locale={loc} />
       <PageTransition />
       <Nav locale={loc} />
       <main id="main">{children}</main>
-      <Footer locale={loc} />
-    </>
+      <Footer locale={loc} footer={nav.footer} credentials={institution.credentials} />
+    </NavDataProvider>
   );
 }

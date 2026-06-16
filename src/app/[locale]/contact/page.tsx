@@ -3,12 +3,12 @@ import type { Metadata } from 'next';
 import { isLocale, type Locale, pick } from '@/lib/i18n';
 import { PageHero } from '@/components/sections/PageHero';
 import { ContactForm } from '@/components/sections/ContactForm';
-import { contactMeta } from '@/content/contact';
-import { images } from '@/content/images';
+import { getDoc } from '@/lib/content';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const tr = pick(isLocale(locale) ? locale : 'en');
+  const { contactMeta } = await getDoc('contact');
   return { title: tr(contactMeta.title), description: tr(contactMeta.lead) };
 }
 
@@ -17,6 +17,9 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
   if (!isLocale(locale)) notFound();
   const loc = locale as Locale;
   const tr = pick(loc);
+  const contact = await getDoc('contact');
+  const { contactMeta } = contact;
+  const images = (await getDoc('images')).images;
 
   return (
     <>
@@ -30,7 +33,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
       />
       <section className="border-t border-hairline py-16 md:py-24">
         <div className="wrap max-w-3xl">
-          <ContactForm locale={loc} />
+          <ContactForm locale={loc} routes={contact.routes} form={contact.form} office={contact.office} />
         </div>
       </section>
     </>

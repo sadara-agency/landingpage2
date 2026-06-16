@@ -1,0 +1,194 @@
+'use client';
+
+import { useState } from 'react';
+import {
+  saveArticle, deleteArticle, reorderArticles, type ArticleRow,
+} from '@/app/admin/(dashboard)/articles/actions';
+import { ImageInput } from './ImageInput';
+
+const TYPES: ArticleRow['type'][] = ['article', 'news'];
+
+const BLANK: ArticleRow = {
+  slug: '', category_ar: '', category_en: '', title_ar: '', title_en: '',
+  excerpt_ar: '', excerpt_en: '', body_ar: '', body_en: '', date: '',
+  type: 'article', image_url: null, sort: 0, published: true,
+};
+
+export function ArticlesManager({ initial }: { initial: ArticleRow[] }) {
+  const [rows, setRows] = useState<ArticleRow[]>(initial);
+  const [editing, setEditing] = useState<ArticleRow | null>(null);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  async function onSave(row: ArticleRow) {
+    const res = await saveArticle(row);
+    if (!res.ok) { setMsg(`Error: ${res.error}`); return; }
+    setEditing(null);
+    setRows((rs) => {
+      const exists = row.id && rs.some((r) => r.id === row.id);
+      return exists ? rs.map((r) => (r.id === row.id ? row : r)) : [...rs, row];
+    });
+    setMsg('Saved — live within seconds.');
+  }
+
+  async function onDelete(id: string) {
+    if (!confirm('Delete this article? This cannot be undone.')) return;
+    const res = await deleteArticle(id);
+    if (!res.ok) { setMsg(`Error: ${res.error}`); return; }
+    setRows((rs) => rs.filter((r) => r.id !== id));
+  }
+
+  async function move(i: number, dir: -1 | 1) {
+    const j = i + dir;
+    if (j < 0 || j >= rows.length) return;
+    const next = [...rows];
+    [next[i], next[j]] = [next[j], next[i]];
+    setRows(next);
+    await reorderArticles(next.map((r) => r.id!).filter(Boolean));
+  }
+
+  return (
+    <div className="max-w-5xl">
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-semibold">Articles &amp; News</h1>
+          {msg && <p className="mt-0.5 text-xs text-white/55">{msg}</p>}
+        </div>
+        <button
+          onClick={() => setEditing({ ...BLANK, sort: rows.length })}
+          className="rounded-lg bg-[#3C3CFA] px-4 py-2 text-sm font-medium"
+        >
+          + New article
+        </button>
+      </div>
+
+      <div className="overflow-hidden rounded-xl border border-white/10">
+        <table className="w-full text-sm">
+          <thead className="bg-white/[0.03] text-left text-white/50">
+            <tr>
+              <th className="px-4 py-2 font-medium">Order</th>
+              <th className="px-4 py-2 font-medium">Title</th>
+              <th className="px-4 py-2 font-medium">Type</th>
+              <th className="px-4 py-2 font-medium">Status</th>
+              <th className="px-4 py-2" />
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r, i) => (
+              <tr key={r.id ?? r.slug} className="border-t border-white/5">
+                <td className="px-4 py-2">
+                  <div className="flex gap-1">
+                    <button onClick={() => move(i, -1)} disabled={i === 0} className="px-1 disabled:opacity-30">↑</button>
+                    <button onClick={() => move(i, 1)} disabled={i === rows.length - 1} className="px-1 disabled:opacity-30">↓</button>
+                  </div>
+                </td>
+                <td className="px-4 py-2">
+                  <div className="font-medium">{r.title_en || '(no title)'}</div>
+                  <div dir="rtl" className="text-xs text-white/45">{r.title_ar}</div>
+                </td>
+                <td className="px-4 py-2 capitalize">{r.type}</td>
+                <td className="px-4 py-2">
+                  <span className={r.published ? 'text-[#34C759]' : 'text-white/40'}>
+                    {r.published ? 'Published' : 'Draft'}
+                  </span>
+                </td>
+                <td className="px-4 py-2 text-right">
+                  <button onClick={() => setEditing(r)} className="text-[#3C3CFA] hover:underline">Edit</button>
+                  {r.id && (
+                    <button onClick={() => onDelete(r.id!)} className="ms-3 text-[#FF453A] hover:underline">Delete</button>
+                  )}
+                </td>
+              </tr>
+            ))}
+            {rows.length === 0 && (
+              <tr><td colSpan={5} className="px-4 py-8 text-center text-white/40">No articles yet.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {editing && (
+        <ArticleEditor row={editing} onCancel={() => setEditing(null)} onSave={onSave} />
+      )}
+    </div>
+  );
+}
+
+function ArticleEditor({
+  row, onCancel, onSave,
+}: { row: ArticleRow; onCancel: () => void; onSave: (r: ArticleRow) => void }) {
+  const [draft, setDraft] = useState<ArticleRow>(row);
+  const set = (patch: Partial<ArticleRow>) => setDraft((d) => ({ ...d, ...patch }));
+
+  const Pair = ({ label, ar, en, keyAr, keyEn, long }: {
+    label: string; ar: string; en: string; keyAr: keyof ArticleRow; keyEn: keyof ArticleRow; long?: boolean;
+  }) => (
+    <div className="space-y-2">
+      <div className="text-sm font-medium text-white/75">{label}</div>
+      <div className="grid gap-2 sm:grid-cols-2">
+        {long ? (
+          <textarea dir="rtl" lang="ar" rows={3} value={ar} onChange={(e) => set({ [keyAr]: e.target.value } as Partial<ArticleRow>)} className="rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm" />
+        ) : (
+          <input dir="rtl" lang="ar" value={ar} onChange={(e) => set({ [keyAr]: e.target.value } as Partial<ArticleRow>)} className="h-10 rounded-lg border border-white/15 bg-white/5 px-3 text-sm" />
+        )}
+        {long ? (
+          <textarea dir="ltr" lang="en" rows={3} value={en} onChange={(e) => set({ [keyEn]: e.target.value } as Partial<ArticleRow>)} className="rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm" />
+        ) : (
+          <input dir="ltr" lang="en" value={en} onChange={(e) => set({ [keyEn]: e.target.value } as Partial<ArticleRow>)} className="h-10 rounded-lg border border-white/15 bg-white/5 px-3 text-sm" />
+        )}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end bg-black/60" onClick={onCancel}>
+      <div
+        className="h-full w-full max-w-2xl overflow-y-auto bg-[#11132B] p-8 text-white"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">{row.id ? 'Edit article' : 'New article'}</h2>
+          <button onClick={onCancel} className="text-2xl text-white/60 hover:text-white">✕</button>
+        </div>
+
+        <div className="space-y-5">
+          <div className="space-y-1.5">
+            <div className="text-sm font-medium text-white/75">Slug (URL, lowercase-dashes)</div>
+            <input value={draft.slug} onChange={(e) => set({ slug: e.target.value })} className="h-10 w-full rounded-lg border border-white/15 bg-white/5 px-3 text-sm" />
+          </div>
+
+          <Pair label="Category" ar={draft.category_ar} en={draft.category_en} keyAr="category_ar" keyEn="category_en" />
+          <Pair label="Title" ar={draft.title_ar} en={draft.title_en} keyAr="title_ar" keyEn="title_en" />
+          <Pair label="Excerpt" ar={draft.excerpt_ar} en={draft.excerpt_en} keyAr="excerpt_ar" keyEn="excerpt_en" long />
+          <Pair label="Body" ar={draft.body_ar} en={draft.body_en} keyAr="body_ar" keyEn="body_en" long />
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <div className="text-sm font-medium text-white/75">Date (text)</div>
+              <input value={draft.date} onChange={(e) => set({ date: e.target.value })} placeholder="e.g. June 2026" className="h-10 w-full rounded-lg border border-white/15 bg-white/5 px-3 text-sm" />
+            </div>
+            <div className="space-y-1.5">
+              <div className="text-sm font-medium text-white/75">Type</div>
+              <select value={draft.type} onChange={(e) => set({ type: e.target.value as ArticleRow['type'] })} className="h-10 w-full rounded-lg border border-white/15 bg-white/5 px-3 text-sm">
+                {TYPES.map((t) => <option key={t} value={t} className="bg-[#11132B] capitalize">{t}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="text-sm font-medium text-white/75">Image</div>
+            <ImageInput value={draft.image_url ?? ''} onChange={(v) => set({ image_url: v || null })} />
+          </div>
+
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={draft.published} onChange={(e) => set({ published: e.target.checked })} /> Published
+          </label>
+        </div>
+
+        <div className="mt-8 flex gap-3">
+          <button onClick={() => onSave(draft)} className="rounded-lg bg-[#3C3CFA] px-5 py-2 text-sm font-medium">Save</button>
+          <button onClick={onCancel} className="rounded-lg border border-white/15 px-5 py-2 text-sm">Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -5,22 +5,23 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Locale } from '@/lib/i18n';
 import { localeHref, pick } from '@/lib/i18n';
-import { athletes, type Athlete } from '@/content/athletes';
-import { athletePhoto } from '@/content/images';
+import type { Athlete } from '@/content/athletes';
 import { Tag } from '@/components/ui/Tag';
 import { cn } from '@/lib/cn';
 import { EASE } from '@/lib/motion';
 
 const TIERS = ['A+', 'A', 'B+', 'B'] as const;
 
-export function RosterGrid({ locale }: { locale: Locale }) {
+type RosterAthlete = Athlete & { photoUrl: string };
+
+export function RosterGrid({ locale, athletes }: { locale: Locale; athletes: RosterAthlete[] }) {
   const tr = pick(locale);
   const [tier, setTier] = useState<string | null>(null);
   const positions = useMemo(() => {
     const set = new Map<string, string>();
     athletes.forEach((a) => set.set(tr(a.position), tr(a.position)));
     return Array.from(set.keys());
-  }, [tr]);
+  }, [tr, athletes]);
   const [position, setPosition] = useState<string | null>(null);
   const filtered = athletes.filter((a) => (!tier || a.tier === tier) && (!position || tr(a.position) === position));
 
@@ -70,12 +71,12 @@ function FilterChip({ children, active, onClick }: { children: React.ReactNode; 
   );
 }
 
-function AthleteCard({ locale, athlete: a }: { locale: Locale; athlete: Athlete }) {
+function AthleteCard({ locale, athlete: a }: { locale: Locale; athlete: RosterAthlete }) {
   const tr = pick(locale);
   return (
     <Link href={localeHref(locale, `/athletes/${a.slug}`)} className="group block h-full overflow-hidden rounded-card border border-hairline bg-paper transition-colors hover:border-ink/30">
       <div className="relative aspect-[4/5] overflow-hidden">
-        <img src={athletePhoto(a.slug)} alt={tr(a.name)} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
+        <img src={a.photoUrl} alt={tr(a.name)} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
         <div className="absolute inset-x-0 top-0 flex items-center justify-between p-3">
           <Tag tone={a.tier === 'A+' ? 'gold' : 'blue'}>{a.tier}</Tag>
           {a.featured && <Tag tone="cyan">{locale === 'ar' ? 'مميَّز' : 'Featured'}</Tag>}

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type { Locale } from '@/lib/i18n';
 import { localeHref, pick, stripLocale } from '@/lib/i18n';
-import { cta } from '@/content/nav';
+import { useNavData } from './NavDataContext';
 import { Logo, LogoLockup } from '@/components/ui/Logo';
 import { Button } from '@/components/ui/Button';
 import { LanguageToggle } from './LanguageToggle';
@@ -14,6 +14,7 @@ import { cn } from '@/lib/cn';
 
 export function Nav({ locale }: { locale: Locale }) {
   const tr = pick(locale);
+  const { cta } = useNavData();
   const pathname = usePathname() || `/${locale}`;
   const path = stripLocale(pathname);
   const isHome = path === '/';

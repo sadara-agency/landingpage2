@@ -1,0 +1,163 @@
+'use client';
+
+import { useState } from 'react';
+import {
+  saveRole, deleteRole, reorderRoles, type RoleRow,
+} from '@/app/admin/(dashboard)/roles/actions';
+
+const BLANK: RoleRow = {
+  title_ar: '', title_en: '', team_ar: '', team_en: '',
+  type_ar: '', type_en: '', location_ar: '', location_en: '',
+  sort: 0, published: true,
+};
+
+export function RolesManager({ initial }: { initial: RoleRow[] }) {
+  const [rows, setRows] = useState<RoleRow[]>(initial);
+  const [editing, setEditing] = useState<RoleRow | null>(null);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  async function onSave(row: RoleRow) {
+    const res = await saveRole(row);
+    if (!res.ok) { setMsg(`Error: ${res.error}`); return; }
+    setEditing(null);
+    setRows((rs) => {
+      const exists = row.id && rs.some((r) => r.id === row.id);
+      return exists ? rs.map((r) => (r.id === row.id ? row : r)) : [...rs, row];
+    });
+    setMsg('Saved — live within seconds.');
+  }
+
+  async function onDelete(id: string) {
+    if (!confirm('Delete this role? This cannot be undone.')) return;
+    const res = await deleteRole(id);
+    if (!res.ok) { setMsg(`Error: ${res.error}`); return; }
+    setRows((rs) => rs.filter((r) => r.id !== id));
+  }
+
+  async function move(i: number, dir: -1 | 1) {
+    const j = i + dir;
+    if (j < 0 || j >= rows.length) return;
+    const next = [...rows];
+    [next[i], next[j]] = [next[j], next[i]];
+    setRows(next);
+    await reorderRoles(next.map((r) => r.id!).filter(Boolean));
+  }
+
+  return (
+    <div className="max-w-5xl">
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-semibold">Open Roles</h1>
+          {msg && <p className="mt-0.5 text-xs text-white/55">{msg}</p>}
+        </div>
+        <button
+          onClick={() => setEditing({ ...BLANK, sort: rows.length })}
+          className="rounded-lg bg-[#3C3CFA] px-4 py-2 text-sm font-medium"
+        >
+          + New role
+        </button>
+      </div>
+
+      <div className="overflow-hidden rounded-xl border border-white/10">
+        <table className="w-full text-sm">
+          <thead className="bg-white/[0.03] text-left text-white/50">
+            <tr>
+              <th className="px-4 py-2 font-medium">Order</th>
+              <th className="px-4 py-2 font-medium">Title</th>
+              <th className="px-4 py-2 font-medium">Team</th>
+              <th className="px-4 py-2 font-medium">Status</th>
+              <th className="px-4 py-2" />
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r, i) => (
+              <tr key={r.id ?? `${r.title_en}-${i}`} className="border-t border-white/5">
+                <td className="px-4 py-2">
+                  <div className="flex gap-1">
+                    <button onClick={() => move(i, -1)} disabled={i === 0} className="px-1 disabled:opacity-30">↑</button>
+                    <button onClick={() => move(i, 1)} disabled={i === rows.length - 1} className="px-1 disabled:opacity-30">↓</button>
+                  </div>
+                </td>
+                <td className="px-4 py-2">
+                  <div className="font-medium">{r.title_en || '(no title)'}</div>
+                  <div dir="rtl" className="text-xs text-white/45">{r.title_ar}</div>
+                </td>
+                <td className="px-4 py-2">
+                  <div>{r.team_en}</div>
+                  <div dir="rtl" className="text-xs text-white/45">{r.team_ar}</div>
+                </td>
+                <td className="px-4 py-2">
+                  <span className={r.published ? 'text-[#34C759]' : 'text-white/40'}>
+                    {r.published ? 'Published' : 'Draft'}
+                  </span>
+                </td>
+                <td className="px-4 py-2 text-right">
+                  <button onClick={() => setEditing(r)} className="text-[#3C3CFA] hover:underline">Edit</button>
+                  {r.id && (
+                    <button onClick={() => onDelete(r.id!)} className="ms-3 text-[#FF453A] hover:underline">Delete</button>
+                  )}
+                </td>
+              </tr>
+            ))}
+            {rows.length === 0 && (
+              <tr><td colSpan={5} className="px-4 py-8 text-center text-white/40">No roles yet.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {editing && (
+        <RoleEditor row={editing} onCancel={() => setEditing(null)} onSave={onSave} />
+      )}
+    </div>
+  );
+}
+
+function RoleEditor({
+  row, onCancel, onSave,
+}: { row: RoleRow; onCancel: () => void; onSave: (r: RoleRow) => void }) {
+  const [draft, setDraft] = useState<RoleRow>(row);
+  const set = (patch: Partial<RoleRow>) => setDraft((d) => ({ ...d, ...patch }));
+
+  const Pair = ({ label, ar, en, keyAr, keyEn }: {
+    label: string; ar: string; en: string; keyAr: keyof RoleRow; keyEn: keyof RoleRow;
+  }) => (
+    <div className="space-y-2">
+      <div className="text-sm font-medium text-white/75">{label}</div>
+      <div className="grid gap-2 sm:grid-cols-2">
+        <input dir="rtl" lang="ar" value={ar} onChange={(e) => set({ [keyAr]: e.target.value } as Partial<RoleRow>)} className="h-10 rounded-lg border border-white/15 bg-white/5 px-3 text-sm" />
+        <input dir="ltr" lang="en" value={en} onChange={(e) => set({ [keyEn]: e.target.value } as Partial<RoleRow>)} className="h-10 rounded-lg border border-white/15 bg-white/5 px-3 text-sm" />
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end bg-black/60" onClick={onCancel}>
+      <div
+        className="h-full w-full max-w-2xl overflow-y-auto bg-[#11132B] p-8 text-white"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">{row.id ? 'Edit role' : 'New role'}</h2>
+          <button onClick={onCancel} className="text-2xl text-white/60 hover:text-white">✕</button>
+        </div>
+
+        <div className="space-y-5">
+          <Pair label="Title" ar={draft.title_ar} en={draft.title_en} keyAr="title_ar" keyEn="title_en" />
+          <Pair label="Team" ar={draft.team_ar} en={draft.team_en} keyAr="team_ar" keyEn="team_en" />
+          <Pair label="Type" ar={draft.type_ar} en={draft.type_en} keyAr="type_ar" keyEn="type_en" />
+          <Pair label="Location" ar={draft.location_ar} en={draft.location_en} keyAr="location_ar" keyEn="location_en" />
+
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={draft.published} onChange={(e) => set({ published: e.target.checked })} /> Published
+          </label>
+        </div>
+
+        <div className="mt-8 flex gap-3">
+          <button onClick={() => onSave(draft)} className="rounded-lg bg-[#3C3CFA] px-5 py-2 text-sm font-medium">Save</button>
+          <button onClick={onCancel} className="rounded-lg border border-white/15 px-5 py-2 text-sm">Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+}

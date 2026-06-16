@@ -4,12 +4,12 @@ import { isLocale, type Locale, pick } from '@/lib/i18n';
 import { PageHero } from '@/components/sections/PageHero';
 import { CTASection } from '@/components/sections/Blocks';
 import { RevealGroup, RevealItem } from '@/components/motion/Reveal';
-import { pressKit } from '@/content/insights';
-import { images } from '@/content/images';
+import { getDoc } from '@/lib/content';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const tr = pick(isLocale(locale) ? locale : 'en');
+  const { pressKit } = await getDoc('insights');
   return { title: tr(pressKit.title), description: tr(pressKit.lead) };
 }
 
@@ -18,6 +18,8 @@ export default async function PressKitPage({ params }: { params: Promise<{ local
   if (!isLocale(locale)) notFound();
   const loc = locale as Locale;
   const tr = pick(loc);
+  const images = (await getDoc('images')).images;
+  const { pressKit } = await getDoc('insights');
 
   return (
     <>

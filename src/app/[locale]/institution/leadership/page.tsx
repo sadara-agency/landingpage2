@@ -4,12 +4,12 @@ import { isLocale, type Locale, pick } from '@/lib/i18n';
 import { PageHero } from '@/components/sections/PageHero';
 import { PeopleGrid } from '@/components/sections/PeopleGrid';
 import { CTASection } from '@/components/sections/Blocks';
-import { leadership, experts } from '@/content/institution';
-import { images } from '@/content/images';
+import { getDoc } from '@/lib/content';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const tr = pick(isLocale(locale) ? locale : 'en');
+  const { leadership } = await getDoc('institution');
   return { title: tr(leadership.title), description: tr(leadership.lead) };
 }
 
@@ -18,6 +18,9 @@ export default async function LeadershipPage({ params }: { params: Promise<{ loc
   if (!isLocale(locale)) notFound();
   const loc = locale as Locale;
   const tr = pick(loc);
+
+  const { leadership, experts } = await getDoc('institution');
+  const images = (await getDoc('images')).images;
 
   return (
     <>
