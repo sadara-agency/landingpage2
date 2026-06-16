@@ -16,8 +16,8 @@ export function HeroBackdrop_v4() {
         className="absolute inset-0"
         style={{
           background: `
-            radial-gradient(ellipse 120% 110% at 105% 110%, rgba(22, 41, 226, 0.65) 0%, rgba(22, 41, 226, 0.22) 40%, transparent 65%),
-            radial-gradient(ellipse 70% 65% at 105% 110%, rgba(62, 80, 255, 0.50) 0%, transparent 55%)
+            radial-gradient(ellipse 150% 140% at 105% 110%, rgba(22, 41, 226, 0.65) 0%, rgba(22, 41, 226, 0.22) 40%, transparent 65%),
+            radial-gradient(ellipse 90% 85% at 105% 110%, rgba(62, 80, 255, 0.50) 0%, transparent 55%)
           `,
         }}
       />
