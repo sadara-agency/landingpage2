@@ -3,8 +3,7 @@ import type { Metadata } from 'next';
 import { isLocale, type Locale, pick } from '@/lib/i18n';
 import { PageHero } from '@/components/sections/PageHero';
 import { FeatureGrid, CTASection } from '@/components/sections/Blocks';
-import { units } from '@/content/home';
-import { images } from '@/content/images';
+import { getDoc } from '@/lib/content';
 
 const meta = {
   kicker: { ar: 'ما نقدمه', en: 'What We Do' },
@@ -26,6 +25,9 @@ export default async function WhatWeDoPage({ params }: { params: Promise<{ local
   if (!isLocale(locale)) notFound();
   const loc = locale as Locale;
   const tr = pick(loc);
+
+  const { units } = await getDoc('home');
+  const images = (await getDoc('images')).images;
 
   const features = units.map((u) => ({
     no: u.no,

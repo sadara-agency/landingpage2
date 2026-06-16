@@ -1,13 +1,14 @@
 import type { Locale } from '@/lib/i18n';
 import { pick } from '@/lib/i18n';
-import { homeThesis } from '@/content/home';
+import { getDoc } from '@/lib/content';
 import { HeroBackdrop_v4 } from '@/components/sections/HeroBackdrop_v4';
 import { MagneticPillars_v4 } from '@/components/sections/MagneticPillars_v4';
 
 /* The homepage IS the navigation — CAA's exact model.
    Single full-viewport dark screen, no header chrome, pillars centered left. */
-export function HomeHero({ locale }: { locale: Locale }) {
+export async function HomeHero({ locale }: { locale: Locale }) {
   const tr = pick(locale);
+  const { homeThesis } = await getDoc('home');
   return (
     <section className="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-black text-white">
       {/* Visually hidden H1 — content present for crawlers and screen readers */}

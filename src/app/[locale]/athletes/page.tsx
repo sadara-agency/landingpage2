@@ -5,7 +5,8 @@ import { PageHero } from '@/components/sections/PageHero';
 import { RosterGrid } from '@/components/sections/RosterGrid';
 import { CTASection } from '@/components/sections/Blocks';
 import { rosterMeta } from '@/content/athletes';
-import { images } from '@/content/images';
+import { listAthletes } from '@/lib/content/athletes';
+import { getDoc } from '@/lib/content';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -18,6 +19,8 @@ export default async function AthletesPage({ params }: { params: Promise<{ local
   if (!isLocale(locale)) notFound();
   const loc = locale as Locale;
   const tr = pick(loc);
+  const athletes = await listAthletes();
+  const images = (await getDoc('images')).images;
 
   return (
     <>
@@ -29,7 +32,7 @@ export default async function AthletesPage({ params }: { params: Promise<{ local
         image={images.pageHero.athletes}
         crumbs={[{ label: loc === 'ar' ? 'الرئيسية' : 'Home', href: '/' }, { label: tr(rosterMeta.kicker) }]}
       />
-      <RosterGrid locale={loc} />
+      <RosterGrid locale={loc} athletes={athletes} />
       <CTASection
         locale={loc}
         title={loc === 'ar' ? 'كُن جزءاً من القائمة.' : 'Be part of the roster.'}

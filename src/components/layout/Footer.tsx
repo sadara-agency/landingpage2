@@ -1,10 +1,18 @@
 import Link from 'next/link';
 import type { Locale } from '@/lib/i18n';
 import { localeHref, pick } from '@/lib/i18n';
-import { footer } from '@/content/nav';
-import { credentials } from '@/content/institution';
+import type { footer as FooterData } from '@/content/nav';
+import type { credentials as Credentials } from '@/content/institution';
 
-export function Footer({ locale }: { locale: Locale }) {
+export function Footer({
+  locale,
+  footer,
+  credentials,
+}: {
+  locale: Locale;
+  footer: typeof FooterData;
+  credentials: typeof Credentials;
+}) {
   const tr = pick(locale);
   return (
     <footer className="border-t border-white/10 bg-navy-deep py-16 text-white/80">

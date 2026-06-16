@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import type { Locale } from '@/lib/i18n';
 import { localeHref, pick } from '@/lib/i18n';
-import { cta } from '@/content/nav';
+import { useNavData } from './NavDataContext';
 import { Logo } from '@/components/ui/Logo';
 import { LanguageToggle } from './LanguageToggle';
 import { PillarNav } from './PillarNav';
@@ -13,6 +13,7 @@ import { PillarNav } from './PillarNav';
    trigger; the homepage renders PillarNav directly instead of this. */
 export function MegaNav({ locale, open, onClose }: { locale: Locale; open: boolean; onClose: () => void }) {
   const tr = pick(locale);
+  const { cta } = useNavData();
   const panelRef = useRef<HTMLDivElement>(null);
 
   // Esc to close + body scroll lock while open.

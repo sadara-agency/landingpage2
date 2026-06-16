@@ -3,8 +3,8 @@ import type { Metadata } from 'next';
 import { isLocale, type Locale, pick } from '@/lib/i18n';
 import { PageHero } from '@/components/sections/PageHero';
 import { ArticleList } from '@/components/sections/ArticleList';
-import { articles } from '@/content/insights';
-import { images } from '@/content/images';
+import { listArticles } from '@/lib/content/insights';
+import { getDoc } from '@/lib/content';
 
 const meta = {
   title: { ar: 'أخبار وصحافة', en: 'News & Press' },
@@ -22,6 +22,9 @@ export default async function NewsPage({ params }: { params: Promise<{ locale: s
   if (!isLocale(locale)) notFound();
   const loc = locale as Locale;
   const tr = pick(loc);
+  const all = await listArticles();
+  const items = all.filter((a) => a.type === 'news');
+  const images = (await getDoc('images')).images;
   return (
     <>
       <PageHero
@@ -36,7 +39,7 @@ export default async function NewsPage({ params }: { params: Promise<{ locale: s
           { label: tr(meta.title) },
         ]}
       />
-      <ArticleList locale={loc} items={articles.filter((a) => a.type === 'news')} />
+      <ArticleList locale={loc} items={items} />
     </>
   );
 }

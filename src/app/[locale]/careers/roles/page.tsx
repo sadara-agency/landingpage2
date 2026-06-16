@@ -6,12 +6,13 @@ import { PageHero } from '@/components/sections/PageHero';
 import { CTASection } from '@/components/sections/Blocks';
 import { RevealGroup, RevealItem } from '@/components/motion/Reveal';
 import { Tag } from '@/components/ui/Tag';
-import { roles } from '@/content/careers';
-import { images } from '@/content/images';
+import { listRoles } from '@/lib/content/roles';
+import { getDoc } from '@/lib/content';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const tr = pick(isLocale(locale) ? locale : 'en');
+  const { roles } = await getDoc('careers');
   return { title: tr(roles.title), description: tr(roles.lead) };
 }
 
@@ -20,6 +21,9 @@ export default async function RolesPage({ params }: { params: Promise<{ locale: 
   if (!isLocale(locale)) notFound();
   const loc = locale as Locale;
   const tr = pick(loc);
+  const { roles } = await getDoc('careers');
+  const list = await listRoles();
+  const images = (await getDoc('images')).images;
 
   return (
     <>
@@ -39,7 +43,7 @@ export default async function RolesPage({ params }: { params: Promise<{ locale: 
       <section className="border-t border-hairline py-16 md:py-24">
         <div className="wrap">
           <RevealGroup className="overflow-hidden rounded-card border border-hairline">
-            {roles.list.map((r, i) => (
+            {list.map((r, i) => (
               <RevealItem key={i}>
                 <Link
                   href={localeHref(loc, '/contact')}

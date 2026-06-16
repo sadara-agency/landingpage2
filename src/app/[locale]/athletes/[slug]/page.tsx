@@ -2,15 +2,15 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { isLocale, type Locale, pick, localeHref, locales } from '@/lib/i18n';
-import { athletes, getAthlete } from '@/content/athletes';
+import { getAthlete, listAthletes } from '@/lib/content/athletes';
 import { PageHero } from '@/components/sections/PageHero';
 import { SplitBand, CTASection } from '@/components/sections/Blocks';
 import { CountUp } from '@/components/motion/CountUp';
 import { Reveal, RevealGroup, RevealItem } from '@/components/motion/Reveal';
 import { Tag } from '@/components/ui/Tag';
-import { images, athletePhoto } from '@/content/images';
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const athletes = await listAthletes();
   return locales.flatMap((locale) => athletes.map((a) => ({ locale, slug: a.slug })));
 }
 
@@ -21,7 +21,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, slug } = await params;
   const tr = pick(isLocale(locale) ? locale : 'en');
-  const a = getAthlete(slug);
+  const a = await getAthlete(slug);
   if (!a) return { title: 'Athlete' };
   return { title: tr(a.name), description: tr(a.bio) };
 }
@@ -35,7 +35,7 @@ export default async function AthleteProfilePage({
   if (!isLocale(locale)) notFound();
   const loc = locale as Locale;
   const tr = pick(loc);
-  const a = getAthlete(slug);
+  const a = await getAthlete(slug);
   if (!a) notFound();
 
   return (
@@ -45,7 +45,7 @@ export default async function AthleteProfilePage({
         kicker={`${a.tier} · ${tr(a.position)}`}
         title={tr(a.name)}
         lead={tr(a.bio)}
-        image={athletePhoto(a.slug)}
+        image={a.photoUrl}
         crumbs={[
           { label: loc === 'ar' ? 'الرئيسية' : 'Home', href: '/' },
           { label: loc === 'ar' ? 'لاعبونا' : 'Our Athletes', href: '/athletes' },
