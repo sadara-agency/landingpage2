@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Logo } from '@/components/ui/Logo';
+import { LogoIcon } from '@/components/ui/Logo';
 
 /*
  * Full-screen page-transition overlay — fires on every route change.
@@ -72,7 +72,7 @@ export function PageTransition() {
             strokeLinecap="round"
           />
         </svg>
-        <Logo tone="paper" size="sm" withWordmark={false} />
+        <LogoIcon className="h-7 w-7 text-white" />
       </div>
     </div>
   );
