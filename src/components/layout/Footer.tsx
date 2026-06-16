@@ -3,7 +3,6 @@ import type { Locale } from '@/lib/i18n';
 import { localeHref, pick } from '@/lib/i18n';
 import { footer } from '@/content/nav';
 import { credentials } from '@/content/institution';
-import { LogoLockup } from '@/components/ui/Logo';
 
 export function Footer({ locale }: { locale: Locale }) {
   const tr = pick(locale);
@@ -12,7 +11,7 @@ export function Footer({ locale }: { locale: Locale }) {
       <div className="wrap">
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
-            <LogoLockup variant="reverse" className="h-10" />
+            <img src="/brand/footer/Artboard 14.svg" alt="Sadara" className="h-10 w-auto" />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/55">{tr(footer.tagline)}</p>
           </div>
           {footer.columns.map((col, i) => (
