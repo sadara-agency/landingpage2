@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import type { Locale } from '@/lib/i18n';
 import { localeHref, pick, stripLocale } from '@/lib/i18n';
 import { cta } from '@/content/nav';
-import { Logo } from '@/components/ui/Logo';
+import { Logo, LogoLockup } from '@/components/ui/Logo';
 import { Button } from '@/components/ui/Button';
 import { LanguageToggle } from './LanguageToggle';
 import { MegaNav } from './MegaNav';
@@ -48,7 +48,13 @@ export function Nav({ locale }: { locale: Locale }) {
       >
         <div className="wrap flex h-[var(--header-h)] items-center gap-6">
           <Link href={localeHref(locale, '/')} aria-label="Sadara home">
-            <Logo tone={onDark ? 'paper' : 'ink'} size={isHome ? 'lg' : 'sm'} />
+            {onDark ? (
+              // Over the dark hero: designer's baked white lockup.
+              <LogoLockup variant="reverse" className={isHome ? 'h-11' : 'h-8'} />
+            ) : (
+              // Solid paper header (scrolled, interior pages): font-rendered lockup.
+              <Logo tone="ink" size={isHome ? 'lg' : 'sm'} />
+            )}
           </Link>
 
           <div className="ms-auto flex items-center gap-3">

@@ -16,6 +16,29 @@ export function LogoIcon({ className }: { className?: string }) {
   );
 }
 
+/** The designer's baked full lockup (emblem + wordmark drawn as paths).
+ *  Use on dark surfaces where the branded artwork is preferred over the
+ *  font-rendered wordmark. Reverse = all-white; on-navy = white+blue. */
+export function LogoLockup({
+  className,
+  variant = 'reverse',
+  alt = 'Sadara Sports — صدارة الرياضية',
+}: {
+  className?: string;
+  variant?: 'reverse' | 'on-navy' | 'on-black' | 'blue';
+  alt?: string;
+}) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element — static brand SVG, no optimization needed
+    <img
+      src={`/brand/logo-lockup-${variant}.svg`}
+      alt={alt}
+      className={cn('h-9 w-auto', className)}
+      draggable={false}
+    />
+  );
+}
+
 /** Full lockup. `tone` controls wordmark color for dark (over-photo) vs light headers.
  *  `size` controls the icon and text scale: 'sm' = default, 'lg' = homepage. */
 export function Logo({

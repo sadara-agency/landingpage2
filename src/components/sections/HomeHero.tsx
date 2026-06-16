@@ -2,6 +2,7 @@ import type { Locale } from '@/lib/i18n';
 import { pick } from '@/lib/i18n';
 import { homeThesis } from '@/content/home';
 import { PillarNav } from '@/components/layout/PillarNav';
+import { HeroNeonFrame } from '@/components/sections/HeroNeonFrame';
 
 /* The homepage IS the navigation — CAA's exact model.
    Single full-viewport dark screen, no header chrome, pillars centered left. */
@@ -18,6 +19,9 @@ export function HomeHero({ locale }: { locale: Locale }) {
         className="pointer-events-none absolute inset-0 -z-0"
         style={{ background: 'radial-gradient(ellipse 100% 80% at 70% 40%, rgba(30,35,55,0.5), transparent 100%)' }}
       />
+
+      {/* Neon light frame — flowing electric-blue along the right + bottom edges */}
+      <HeroNeonFrame />
 
       {/* CAA layout: pillar block starts at ~32% from top, 24% from the start edge (RTL-safe) */}
       <div

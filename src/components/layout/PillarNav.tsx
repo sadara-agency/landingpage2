@@ -2,11 +2,14 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { motion, useReducedMotion } from 'framer-motion';
 import type { Locale } from '@/lib/i18n';
 import { localeHref, pick } from '@/lib/i18n';
 import { homePillars } from '@/content/home';
 import { navItems } from '@/content/nav';
 import { cn } from '@/lib/cn';
+
+const EASE_OUT_EXPO = [0.22, 1, 0.36, 1] as const;
 
 /* CAA homepage-as-nav pattern.
    Both home and overlay show the children column on hover.
@@ -26,12 +29,16 @@ export function PillarNav({
   const tr = pick(locale);
   const [active, setActive] = useState<string | null>(null);
   const current = active ? (homePillars.find((p) => p.key === active) ?? null) : null;
+  const reduce = useReducedMotion();
 
   const secondary = secondaryHrefs
     .map((href) => navItems.find((n) => n.href === href))
     .filter((n): n is NonNullable<typeof n> => Boolean(n));
 
   const pillarFontSize = size === 'home' ? '50px' : '38px';
+
+  // Animate only on the home size; overlay is triggered mid-session (no entrance needed)
+  const animate = size === 'home' && !reduce;
 
   return (
     <div
@@ -41,8 +48,13 @@ export function PillarNav({
       {/* Pillars + secondary links */}
       <div className="flex-none">
         <ul className="flex flex-col" style={{ gap: '2px' }}>
-          {homePillars.map((p) => (
-            <li key={p.key}>
+          {homePillars.map((p, i) => (
+            <motion.li
+              key={p.key}
+              initial={animate ? { opacity: 0, y: 18 } : false}
+              animate={{ opacity: 1, y: 0 }}
+              transition={animate ? { delay: i * 0.13, duration: 0.55, ease: EASE_OUT_EXPO } : undefined}
+            >
               <Link
                 href={localeHref(locale, p.href)}
                 onMouseEnter={() => setActive(p.key)}
@@ -61,14 +73,23 @@ export function PillarNav({
               >
                 {tr(p.label)}
               </Link>
-            </li>
+            </motion.li>
           ))}
         </ul>
 
         {/* Secondary destinations */}
         <ul className="mt-10 flex flex-col" style={{ gap: '7px' }}>
-          {secondary.map((n) => (
-            <li key={n.href}>
+          {secondary.map((n, i) => (
+            <motion.li
+              key={n.href}
+              initial={animate ? { opacity: 0, y: 10 } : false}
+              animate={{ opacity: 1, y: 0 }}
+              transition={
+                animate
+                  ? { delay: homePillars.length * 0.13 + 0.15 + i * 0.08, duration: 0.45, ease: EASE_OUT_EXPO }
+                  : undefined
+              }
+            >
               <Link
                 href={localeHref(locale, n.href)}
                 onClick={onNavigate}
@@ -78,7 +99,7 @@ export function PillarNav({
               >
                 {tr(n.label)}
               </Link>
-            </li>
+            </motion.li>
           ))}
         </ul>
       </div>

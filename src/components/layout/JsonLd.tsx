@@ -6,7 +6,7 @@ export function OrganizationJsonLd() {
     name: 'Sadara Sports',
     alternateName: 'صدارة الرياضية',
     url: 'https://sadarasport.sa',
-    logo: 'https://sadarasport.sa/brand/logo-icon.svg',
+    logo: 'https://sadarasport.sa/brand/logo-lockup-on-navy.svg',
     description:
       'An institution, not an agency. Sadara represents and develops athletes, advises clubs and federations, and connects markets — one institution, three strategic units.',
     address: {

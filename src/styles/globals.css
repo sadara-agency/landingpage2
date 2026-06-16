@@ -21,7 +21,10 @@
 @layer base {
   * {
     -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    text-rendering: geometricPrecision;
   }
   html {
     scroll-behavior: smooth;
