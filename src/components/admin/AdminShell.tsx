@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { browserClient } from '@/lib/supabase/browser';
 import { cn } from '@/lib/cn';
@@ -49,7 +50,15 @@ export function AdminShell({
       <div className="flex">
         <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col border-r border-white/10 bg-[#11132B]">
           <div className="px-5 py-5">
-            <Link href="/admin" className="text-base font-semibold">Sadara CMS</Link>
+            <Link href="/admin">
+              <Image
+                src="/brand/logo-lockup-on-navy.svg"
+                alt="Sadara"
+                width={120}
+                height={36}
+                priority
+              />
+            </Link>
           </div>
           <nav className="flex-1 overflow-y-auto px-3 pb-6">
             <SectionLabel>Content</SectionLabel>
