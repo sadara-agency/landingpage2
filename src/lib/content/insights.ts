@@ -38,6 +38,11 @@ const fallbackList = (): ArticleWithImage[] =>
     image: images.articles[i % images.articles.length],
   }));
 
+export async function getArticleBySlug(slug: string): Promise<ArticleWithImage | null> {
+  const all = await listArticles();
+  return all.find((a) => a.slug === slug) ?? null;
+}
+
 export const listArticles = cache(async (): Promise<ArticleWithImage[]> => {
   if (!supabaseConfigured()) return fallbackList();
   try {
