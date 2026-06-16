@@ -11,7 +11,7 @@ export function Footer({ locale }: { locale: Locale }) {
       <div className="wrap">
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
-            <img src="/brand/footer/Artboard 14.svg" alt="Sadara" className="h-12 w-auto" />
+            <img src="/brand/footer/Artboard 14.svg" alt="Sadara" className="w-64 h-auto" />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/55">{tr(footer.tagline)}</p>
           </div>
           {footer.columns.map((col, i) => (
