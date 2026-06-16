@@ -2,7 +2,7 @@ import type { Bi } from '@/lib/i18n';
 import type { ModuleData } from '@/components/sections/ModuleDetail';
 
 export const institutionHub = {
-  kicker: { ar: 'المؤسسة', en: 'The Institution' } as Bi,
+  kicker: { ar: 'صدارة', en: 'Sadara' } as Bi,
   title: { ar: 'مؤسسة، لا وكالة.', en: 'An institution, not an agency.' } as Bi,
   lead: {
     ar: 'من نحن، والنموذج الذي نعمل به، والأشخاص خلفه، والحوكمة التي تحميه، والأثر الذي نصنعه — كلٌّ في مكانه.',
@@ -27,7 +27,7 @@ export const about: ModuleData = {
   },
   crumbs: [
     { label: { ar: 'الرئيسية', en: 'Home' }, href: '/' },
-    { label: { ar: 'المؤسسة', en: 'Institution' }, href: '/institution' },
+    { label: { ar: 'صدارة', en: 'Sadara' }, href: '/institution' },
     { label: { ar: 'من نحن', en: 'Who We Are' } },
   ],
   overview: {
@@ -69,7 +69,7 @@ export const model: ModuleData = {
   },
   crumbs: [
     { label: { ar: 'الرئيسية', en: 'Home' }, href: '/' },
-    { label: { ar: 'المؤسسة', en: 'Institution' }, href: '/institution' },
+    { label: { ar: 'صدارة', en: 'Sadara' }, href: '/institution' },
     { label: { ar: 'النموذج', en: 'The Model' } },
   ],
   overview: {
@@ -138,7 +138,7 @@ export const governance: ModuleData = {
   },
   crumbs: [
     { label: { ar: 'الرئيسية', en: 'Home' }, href: '/' },
-    { label: { ar: 'المؤسسة', en: 'Institution' }, href: '/institution' },
+    { label: { ar: 'صدارة', en: 'Sadara' }, href: '/institution' },
     { label: { ar: 'الحوكمة', en: 'Governance' } },
   ],
   overview: {
@@ -178,7 +178,7 @@ export const impact: ModuleData = {
   },
   crumbs: [
     { label: { ar: 'الرئيسية', en: 'Home' }, href: '/' },
-    { label: { ar: 'المؤسسة', en: 'Institution' }, href: '/institution' },
+    { label: { ar: 'صدارة', en: 'Sadara' }, href: '/institution' },
     { label: { ar: 'الرؤية والأثر', en: 'Vision & Impact' } },
   ],
   overview: {

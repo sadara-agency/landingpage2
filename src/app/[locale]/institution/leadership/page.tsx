@@ -29,7 +29,7 @@ export default async function LeadershipPage({ params }: { params: Promise<{ loc
         image={images.pageHero.institution}
         crumbs={[
           { label: loc === 'ar' ? 'الرئيسية' : 'Home', href: '/' },
-          { label: loc === 'ar' ? 'المؤسسة' : 'Institution', href: '/institution' },
+          { label: loc === 'ar' ? 'صدارة' : 'Sadara', href: '/institution' },
           { label: loc === 'ar' ? 'القيادة' : 'Leadership' },
         ]}
       />
