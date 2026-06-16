@@ -29,7 +29,7 @@ export function LogoLockup({
   alt?: string;
 }) {
   return (
-    // eslint-disable-next-line @next/next/no-img-element — static brand SVG, no optimization needed
+    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={`/brand/logo-lockup-${variant}.svg`}
       alt={alt}
