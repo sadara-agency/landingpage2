@@ -114,7 +114,7 @@ export function PageBuilder({
               className="rounded-lg border border-dashed px-4 py-8 text-center text-sm"
               style={{ borderColor: 'var(--adm-border)', color: 'var(--adm-text-xs)' }}
             >
-              No blocks yet. Use "+ Add block" to start building.
+              No blocks yet. Use &quot;+ Add block&quot; to start building.
             </p>
           )}
 
