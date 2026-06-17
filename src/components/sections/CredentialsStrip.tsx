@@ -16,7 +16,7 @@ export function CredentialsStrip({
     <section className="bg-navy-deep py-20 text-white md:py-24">
       <div className="wrap">
         <span className="section-label mb-12 border-white/15 text-white/55">
-          {locale === 'ar' ? 'بيانات قانونية' : 'Legal credentials'}
+          {tr({ en: 'Legal credentials', ar: 'بيانات قانونية' })}
         </span>
         <RevealGroup className="grid gap-px overflow-hidden border-y border-white/12 bg-white/12 sm:grid-cols-2">
           {credentials.map((c, i) => (

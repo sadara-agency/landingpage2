@@ -31,22 +31,22 @@ export default async function LeadershipPage({ params }: { params: Promise<{ loc
         lead={tr(leadership.lead)}
         image={images.pageHero.institution}
         crumbs={[
-          { label: loc === 'ar' ? 'الرئيسية' : 'Home', href: '/' },
-          { label: loc === 'ar' ? 'صدارة' : 'Sadara', href: '/institution' },
-          { label: loc === 'ar' ? 'القيادة' : 'Leadership' },
+          { label: tr({ en: 'Home', ar: 'الرئيسية' }), href: '/' },
+          { label: tr({ en: 'Sadara', ar: 'صدارة' }), href: '/institution' },
+          { label: tr({ en: 'Leadership', ar: 'القيادة' }) },
         ]}
       />
       <PeopleGrid locale={loc} people={leadership.people} />
       <PeopleGrid
         locale={loc}
         people={experts.people}
-        heading={loc === 'ar' ? 'الخبراء والفريق الفني' : 'Experts & Technical Team'}
-        subheading={loc === 'ar' ? 'منصّة التخصّص خلف التنفيذ.' : 'The specialist bench behind delivery.'}
+        heading={tr({ en: 'Experts & Technical Team', ar: 'الخبراء والفريق الفني' })}
+        subheading={tr({ en: 'The specialist bench behind delivery.', ar: 'منصّة التخصّص خلف التنفيذ.' })}
       />
       <CTASection
         locale={loc}
-        title={loc === 'ar' ? 'انضمّ إلى صدارة.' : 'Join Sadara.'}
-        primary={{ label: loc === 'ar' ? 'الوظائف' : 'Careers', href: '/careers' }}
+        title={tr({ en: 'Join Sadara.', ar: 'انضمّ إلى صدارة.' })}
+        primary={{ label: tr({ en: 'Careers', ar: 'الوظائف' }), href: '/careers' }}
       />
     </>
   );

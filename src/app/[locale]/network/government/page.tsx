@@ -26,8 +26,8 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
           { title: { ar: 'وزارة الرياضة', en: 'Ministry of Sport' }, src: '/network/GOVERNMENT/Ministry of Sport.png' },
           { title: { ar: 'الاتحاد السعودي لكرة القدم', en: 'SAFF' }, src: '/network/GOVERNMENT/saff.png' },
         ]}
-        kicker={locale === 'ar' ? 'الحكومة والاتحادات' : 'Government & Federations'}
-        title={locale === 'ar' ? 'الجهات التي نعمل ضمن إطارها.' : 'The bodies we operate within.'}
+        kicker={pick(locale as Locale)({ en: 'Government & Federations', ar: 'الحكومة والاتحادات' })}
+        title={pick(locale as Locale)({ en: 'The bodies we operate within.', ar: 'الجهات التي نعمل ضمن إطارها.' })}
       />
     </>
   );

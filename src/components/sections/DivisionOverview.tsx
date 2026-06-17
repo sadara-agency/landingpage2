@@ -35,7 +35,7 @@ export function DivisionOverview({ locale, data, parentLabel }: { locale: Locale
         lead={tr(data.lead)}
         image={heroFor(data.slug)}
         crumbs={[
-          { label: locale === 'ar' ? 'الرئيسية' : 'Home', href: '/' },
+          { label: tr({ en: 'Home', ar: 'الرئيسية' }), href: '/' },
           { label: tr(parentLabel), href: '/what-we-do' },
           { label: tr(data.title) },
         ]}
@@ -53,7 +53,7 @@ export function DivisionOverview({ locale, data, parentLabel }: { locale: Locale
       {data.stats && data.stats.length > 0 && (
         <StatBand
           locale={locale}
-          kicker={locale === 'ar' ? 'نتائجنا تتحدّث عنّا' : "Our results speak for themselves"}
+          kicker={tr({ en: 'Our results speak for themselves', ar: 'نتائجنا تتحدّث عنّا' })}
           stats={data.stats}
         />
       )}

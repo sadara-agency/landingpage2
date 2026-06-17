@@ -83,9 +83,9 @@ export default async function ArticleDetailPage({
         lead={tr(a.excerpt)}
         image={a.image}
         crumbs={[
-          { label: loc === 'ar' ? 'الرئيسية' : 'Home', href: '/' },
-          { label: loc === 'ar' ? 'رؤى وأخبار' : 'Insights', href: '/insights' },
-          { label: loc === 'ar' ? 'مقالات' : 'Articles', href: '/insights/articles' },
+          { label: tr({ en: 'Home', ar: 'الرئيسية' }), href: '/' },
+          { label: tr({ en: 'Insights', ar: 'رؤى وأخبار' }), href: '/insights' },
+          { label: tr({ en: 'Articles', ar: 'مقالات' }), href: '/insights/articles' },
           { label: tr(a.title) },
         ]}
       />
@@ -103,7 +103,7 @@ export default async function ArticleDetailPage({
             <Reveal>
               <div
                 className="prose prose-neutral max-w-none dark:prose-invert"
-                dangerouslySetInnerHTML={{ __html: loc === 'ar' ? a.body.ar : a.body.en }}
+                dangerouslySetInnerHTML={{ __html: a.body[loc] ?? a.body.en }}
               />
             </Reveal>
           ) : (
@@ -122,7 +122,7 @@ export default async function ArticleDetailPage({
               className="inline-flex items-center gap-2 text-sm font-medium text-muted transition-colors hover:text-ink"
             >
               <span className="rtl:rotate-180">←</span>
-              {loc === 'ar' ? 'العودة إلى المقالات' : 'Back to articles'}
+              {tr({ en: 'Back to articles', ar: 'العودة إلى المقالات' })}
             </Link>
           </Reveal>
         </div>
@@ -130,8 +130,8 @@ export default async function ArticleDetailPage({
 
       <CTASection
         locale={loc}
-        title={loc === 'ar' ? 'هل أنت مستعد لبدء المحادثة؟' : 'Ready to start the conversation?'}
-        primary={{ label: loc === 'ar' ? 'تواصل معنا' : 'Contact us', href: '/contact' }}
+        title={tr({ en: 'Ready to start the conversation?', ar: 'هل أنت مستعد لبدء المحادثة؟' })}
+        primary={{ label: tr({ en: 'Contact us', ar: 'تواصل معنا' }), href: '/contact' }}
       />
     </>
   );

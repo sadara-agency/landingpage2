@@ -10,12 +10,12 @@ export function isLocale(value: string): value is Locale {
   return (locales as readonly string[]).includes(value);
 }
 
-export function dir(locale: Locale): 'rtl' | 'ltr' {
-  return locale === 'ar' ? 'rtl' : 'ltr';
+export function dir(_locale: Locale): 'rtl' | 'ltr' {
+  return 'ltr';
 }
 
-export function otherLocale(locale: Locale): Locale {
-  return locale === 'ar' ? 'en' : 'ar';
+export function otherLocale(_locale: Locale): Locale {
+  return 'en';
 }
 
 /** A bilingual string. */

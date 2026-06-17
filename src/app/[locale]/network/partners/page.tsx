@@ -27,8 +27,8 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
           { title: { ar: 'سجايا', en: 'Sajaya' }, src: '/network/INSTITUTIONS/Sajaya.png' },
           { title: { ar: 'صكوك', en: 'Sukuk' }, src: '/network/INSTITUTIONS/Sukuk.png' },
         ]}
-        kicker={locale === 'ar' ? 'المؤسسات المالية' : 'Financial Institutions'}
-        title={locale === 'ar' ? 'الشركاء الماليون.' : 'Financial partners.'}
+        kicker={pick(locale as Locale)({ en: 'Financial Institutions', ar: 'المؤسسات المالية' })}
+        title={pick(locale as Locale)({ en: 'Financial partners.', ar: 'الشركاء الماليون.' })}
       />
       <LogoGrid
         locale={locale as Locale}
@@ -38,8 +38,8 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
           { title: { ar: 'هودل', en: 'Hudl' }, src: '/network/SOLUTIONS/Hudl.png' },
           { title: { ar: 'فيتبت', en: 'FITBIT' }, src: '/network/SOLUTIONS/FITBIT.png' },
         ]}
-        kicker={locale === 'ar' ? 'المنصات التقنية' : 'Technical Platforms'}
-        title={locale === 'ar' ? 'أدوات الأداء والتحليل.' : 'Performance & analytics tools.'}
+        kicker={pick(locale as Locale)({ en: 'Technical Platforms', ar: 'المنصات التقنية' })}
+        title={pick(locale as Locale)({ en: 'Performance & analytics tools.', ar: 'أدوات الأداء والتحليل.' })}
       />
     </>
   );

@@ -45,19 +45,15 @@ export default async function WhatWeDoPage({ params }: { params: Promise<{ local
         title={tr(meta.title)}
         lead={tr(meta.lead)}
         image={images.pageHero.default}
-        crumbs={[{ label: loc === 'ar' ? 'الرئيسية' : 'Home', href: '/' }, { label: tr(meta.kicker) }]}
+        crumbs={[{ label: tr({ en: 'Home', ar: 'الرئيسية' }), href: '/' }, { label: tr(meta.kicker) }]}
       />
       <FeatureGrid locale={loc} features={features} columns={3} />
       <CTASection
         locale={loc}
-        title={loc === 'ar' ? 'مؤسسةٌ واحدة لكل احتياج.' : 'One institution for every need.'}
-        lead={
-          loc === 'ar'
-            ? 'سواء كنت لاعباً أو نادياً أو شركة — ابدأ من المسار الذي يناسبك.'
-            : 'Whether you’re an athlete, a club, or a company — start from the path that fits you.'
-        }
-        primary={{ label: loc === 'ar' ? 'تواصل معنا' : 'Contact us', href: '/contact' }}
-        secondary={{ label: loc === 'ar' ? 'تعرّف على المؤسسة' : 'About the institution', href: '/institution' }}
+        title={tr({ en: 'One institution for every need.', ar: 'مؤسسةٌ واحدة لكل احتياج.' })}
+        lead={tr({ en: "Whether you're an athlete, a club, or a company — start from the path that fits you.", ar: 'سواء كنت لاعباً أو نادياً أو شركة — ابدأ من المسار الذي يناسبك.' })}
+        primary={{ label: tr({ en: 'Contact us', ar: 'تواصل معنا' }), href: '/contact' }}
+        secondary={{ label: tr({ en: 'About the institution', ar: 'تعرّف على المؤسسة' }), href: '/institution' }}
       />
     </>
   );

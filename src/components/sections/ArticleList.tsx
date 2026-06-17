@@ -23,7 +23,7 @@ export function ArticleList({ locale, items }: { locale: Locale; items: ArticleW
                   <div className="mt-4 flex items-center gap-3">
                     <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-electric">{tr(a.category)}</span>
                     <span className="font-mono text-[10px] uppercase tracking-wider text-faint">
-                      {a.type === 'news' ? (locale === 'ar' ? 'خبر' : 'News') : locale === 'ar' ? 'مقال' : 'Article'}
+                      {a.type === 'news' ? tr({ en: 'News', ar: 'خبر' }) : tr({ en: 'Article', ar: 'مقال' })}
                     </span>
                   </div>
                   <h3 className="mt-2 text-h3 font-bold leading-snug text-ink group-hover:text-electric transition-colors">{tr(a.title)}</h3>

@@ -31,14 +31,14 @@ export default async function InstitutionPage({ params }: { params: Promise<{ lo
         title={tr(institutionHub.title)}
         lead={tr(institutionHub.lead)}
         image={images.pageHero.institution}
-        crumbs={[{ label: loc === 'ar' ? 'الرئيسية' : 'Home', href: '/' }, { label: tr(institutionHub.kicker) }]}
+        crumbs={[{ label: tr({ en: 'Home', ar: 'الرئيسية' }), href: '/' }, { label: tr(institutionHub.kicker) }]}
       />
       <FeatureGrid locale={loc} features={features} columns={3} />
       <CTASection
         locale={loc}
-        title={loc === 'ar' ? 'مؤسسةٌ بُنيت لتدوم.' : 'An institution built to last.'}
-        primary={{ label: loc === 'ar' ? 'ما نقدمه' : 'What we do', href: '/what-we-do' }}
-        secondary={{ label: loc === 'ar' ? 'تواصل معنا' : 'Contact us', href: '/contact' }}
+        title={tr({ en: 'An institution built to last.', ar: 'مؤسسةٌ بُنيت لتدوم.' })}
+        primary={{ label: tr({ en: 'What we do', ar: 'ما نقدمه' }), href: '/what-we-do' }}
+        secondary={{ label: tr({ en: 'Contact us', ar: 'تواصل معنا' }), href: '/contact' }}
       />
     </>
   );

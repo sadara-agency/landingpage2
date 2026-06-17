@@ -34,9 +34,9 @@ export default async function RolesPage({ params }: { params: Promise<{ locale: 
         lead={tr(roles.lead)}
         image={images.pageHero.careers}
         crumbs={[
-          { label: loc === 'ar' ? 'الرئيسية' : 'Home', href: '/' },
-          { label: loc === 'ar' ? 'الوظائف' : 'Careers', href: '/careers' },
-          { label: loc === 'ar' ? 'الأدوار' : 'Roles' },
+          { label: tr({ en: 'Home', ar: 'الرئيسية' }), href: '/' },
+          { label: tr({ en: 'Careers', ar: 'الوظائف' }), href: '/careers' },
+          { label: tr({ en: 'Roles', ar: 'الأدوار' }) },
         ]}
       />
 
@@ -74,8 +74,8 @@ export default async function RolesPage({ params }: { params: Promise<{ locale: 
 
       <CTASection
         locale={loc}
-        title={loc === 'ar' ? 'قدّم اليوم.' : 'Apply today.'}
-        primary={{ label: loc === 'ar' ? 'تواصل معنا' : 'Contact us', href: '/contact' }}
+        title={tr({ en: 'Apply today.', ar: 'قدّم اليوم.' })}
+        primary={{ label: tr({ en: 'Contact us', ar: 'تواصل معنا' }), href: '/contact' }}
       />
     </>
   );

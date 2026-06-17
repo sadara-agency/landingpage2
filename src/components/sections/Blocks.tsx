@@ -52,7 +52,7 @@ export function FeatureGrid({
                 <p className="mt-3 text-sm leading-relaxed text-muted">{tr(f.desc)}</p>
                 {f.href && (
                   <span className="mt-auto inline-flex items-center gap-2 pt-8 text-sm font-medium text-electric">
-                    {f.cta ? tr(f.cta) : locale === 'ar' ? 'اعرف المزيد' : 'Learn more'}
+                    {f.cta ? tr(f.cta) : tr({ en: 'Learn more', ar: 'اعرف المزيد' })}
                     <span className="inline-block transition-transform group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1">→</span>
                   </span>
                 )}

@@ -29,7 +29,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
         title={tr(contactMeta.title)}
         lead={tr(contactMeta.lead)}
         image={images.pageHero.contact}
-        crumbs={[{ label: loc === 'ar' ? 'الرئيسية' : 'Home', href: '/' }, { label: tr(contactMeta.kicker) }]}
+        crumbs={[{ label: tr({ en: 'Home', ar: 'الرئيسية' }), href: '/' }, { label: tr(contactMeta.kicker) }]}
       />
       <section className="border-t border-hairline py-16 md:py-24">
         <div className="wrap max-w-3xl">

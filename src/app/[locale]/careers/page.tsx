@@ -41,14 +41,14 @@ export default async function CareersPage({ params }: { params: Promise<{ locale
         title={tr(careersHub.title)}
         lead={tr(careersHub.lead)}
         image={images.pageHero.careers}
-        crumbs={[{ label: loc === 'ar' ? 'الرئيسية' : 'Home', href: '/' }, { label: tr(careersHub.kicker) }]}
+        crumbs={[{ label: tr({ en: 'Home', ar: 'الرئيسية' }), href: '/' }, { label: tr(careersHub.kicker) }]}
       />
       <FeatureGrid locale={loc} features={features} columns={2} />
       <CTASection
         locale={loc}
-        title={loc === 'ar' ? 'لا ترى دورك؟' : 'Don’t see your role?'}
-        lead={loc === 'ar' ? 'تواصل معنا على أيّ حال — نحن دائماً نبحث عن الموهبة الصحيحة.' : 'Reach out anyway — we’re always looking for the right talent.'}
-        primary={{ label: loc === 'ar' ? 'تواصل معنا' : 'Contact us', href: '/contact' }}
+        title={tr({ en: "Don't see your role?", ar: 'لا ترى دورك؟' })}
+        lead={tr({ en: "Reach out anyway — we're always looking for the right talent.", ar: 'تواصل معنا على أيّ حال — نحن دائماً نبحث عن الموهبة الصحيحة.' })}
+        primary={{ label: tr({ en: 'Contact us', ar: 'تواصل معنا' }), href: '/contact' }}
       />
     </>
   );

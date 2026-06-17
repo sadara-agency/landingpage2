@@ -58,7 +58,7 @@ export function ContactForm({
       if (!res.ok) throw new Error('failed');
       setSubmitted(true);
     } catch {
-      setServerError(locale === 'ar' ? 'تعذّر الإرسال. حاول مرة أخرى.' : 'Could not send. Please try again.');
+      setServerError(tr({ en: 'Could not send. Please try again.', ar: 'تعذّر الإرسال. حاول مرة أخرى.' }));
     } finally {
       setSending(false);
     }

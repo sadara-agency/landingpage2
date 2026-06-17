@@ -30,9 +30,9 @@ export default async function PressKitPage({ params }: { params: Promise<{ local
         lead={tr(pressKit.lead)}
         image={images.pageHero.insights}
         crumbs={[
-          { label: loc === 'ar' ? 'الرئيسية' : 'Home', href: '/' },
-          { label: loc === 'ar' ? 'رؤى وأخبار' : 'Insights', href: '/insights' },
-          { label: loc === 'ar' ? 'الحقيبة الإعلامية' : 'Press Kit' },
+          { label: tr({ en: 'Home', ar: 'الرئيسية' }), href: '/' },
+          { label: tr({ en: 'Insights', ar: 'رؤى وأخبار' }), href: '/insights' },
+          { label: tr({ en: 'Press Kit', ar: 'الحقيبة الإعلامية' }) },
         ]}
       />
       <section className="border-t border-hairline py-16 md:py-24">
@@ -53,9 +53,9 @@ export default async function PressKitPage({ params }: { params: Promise<{ local
       </section>
       <CTASection
         locale={loc}
-        title={loc === 'ar' ? 'تحتاج أصول العلامة؟' : 'Need brand assets?'}
-        lead={loc === 'ar' ? 'تواصل مع جهة الاتصال الإعلامي وسنزوّدك بما تحتاج.' : 'Contact our media desk and we’ll provide what you need.'}
-        primary={{ label: loc === 'ar' ? 'تواصل إعلامي' : 'Media contact', href: '/contact' }}
+        title={tr({ en: 'Need brand assets?', ar: 'تحتاج أصول العلامة؟' })}
+        lead={tr({ en: "Contact our media desk and we'll provide what you need.", ar: 'تواصل مع جهة الاتصال الإعلامي وسنزوّدك بما تحتاج.' })}
+        primary={{ label: tr({ en: 'Media contact', ar: 'تواصل إعلامي' }), href: '/contact' }}
       />
     </>
   );

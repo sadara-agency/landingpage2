@@ -63,7 +63,7 @@ export function ArticleJsonLd({ headline, description, image, datePublished, url
     description,
     ...(image ? { image: image.startsWith('http') ? image : `${SITE}${image}` } : {}),
     ...(datePublished ? { datePublished } : {}),
-    inLanguage: locale === 'ar' ? 'ar' : 'en',
+    inLanguage: locale,
     url,
     publisher: {
       '@type': 'Organization',

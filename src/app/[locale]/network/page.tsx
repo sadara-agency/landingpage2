@@ -30,14 +30,14 @@ export default async function NetworkPage({ params }: { params: Promise<{ locale
         title={tr(networkHub.title)}
         lead={tr(networkHub.lead)}
         image={images.pageHero.network}
-        crumbs={[{ label: loc === 'ar' ? 'الرئيسية' : 'Home', href: '/' }, { label: tr(networkHub.kicker) }]}
+        crumbs={[{ label: tr({ en: 'Home', ar: 'الرئيسية' }), href: '/' }, { label: tr(networkHub.kicker) }]}
       />
       <FeatureGrid locale={loc} features={features} columns={3} />
       <HomeNetwork locale={loc} />
       <CTASection
         locale={loc}
-        title={loc === 'ar' ? 'انضمّ إلى الشبكة.' : 'Join the network.'}
-        primary={{ label: loc === 'ar' ? 'اشترك معنا' : 'Partner with us', href: '/markets/connect' }}
+        title={tr({ en: 'Join the network.', ar: 'انضمّ إلى الشبكة.' })}
+        primary={{ label: tr({ en: 'Partner with us', ar: 'اشترك معنا' }), href: '/markets/connect' }}
       />
     </>
   );

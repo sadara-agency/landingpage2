@@ -30,18 +30,14 @@ export default async function AthletesPage({ params }: { params: Promise<{ local
         title={tr(rosterMeta.title)}
         lead={tr(rosterMeta.lead)}
         image={images.pageHero.athletes}
-        crumbs={[{ label: loc === 'ar' ? 'الرئيسية' : 'Home', href: '/' }, { label: tr(rosterMeta.kicker) }]}
+        crumbs={[{ label: tr({ en: 'Home', ar: 'الرئيسية' }), href: '/' }, { label: tr(rosterMeta.kicker) }]}
       />
       <RosterGrid locale={loc} athletes={athletes} />
       <CTASection
         locale={loc}
-        title={loc === 'ar' ? 'كُن جزءاً من القائمة.' : 'Be part of the roster.'}
-        lead={
-          loc === 'ar'
-            ? 'تمثيلٌ وتطويرٌ يعاملك كأصلٍ طويل الأمد.'
-            : 'Representation and development that treats you as a long-term asset.'
-        }
-        primary={{ label: loc === 'ar' ? 'قدّم طلب تمثيل' : 'Enquire about representation', href: '/talent/join' }}
+        title={tr({ en: 'Be part of the roster.', ar: 'كُن جزءاً من القائمة.' })}
+        lead={tr({ en: 'Representation and development that treats you as a long-term asset.', ar: 'تمثيلٌ وتطويرٌ يعاملك كأصلٍ طويل الأمد.' })}
+        primary={{ label: tr({ en: 'Enquire about representation', ar: 'قدّم طلب تمثيل' }), href: '/talent/join' }}
       />
     </>
   );

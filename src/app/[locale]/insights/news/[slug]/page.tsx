@@ -47,9 +47,9 @@ export default async function NewsDetailPage({
         lead={tr(a.excerpt)}
         image={a.image}
         crumbs={[
-          { label: loc === 'ar' ? 'الرئيسية' : 'Home', href: '/' },
-          { label: loc === 'ar' ? 'رؤى وأخبار' : 'Insights', href: '/insights' },
-          { label: loc === 'ar' ? 'أخبار' : 'News', href: '/insights/news' },
+          { label: tr({ en: 'Home', ar: 'الرئيسية' }), href: '/' },
+          { label: tr({ en: 'Insights', ar: 'رؤى وأخبار' }), href: '/insights' },
+          { label: tr({ en: 'News', ar: 'أخبار' }), href: '/insights/news' },
           { label: tr(a.title) },
         ]}
       />
@@ -67,7 +67,7 @@ export default async function NewsDetailPage({
             <Reveal>
               <div
                 className="prose prose-neutral max-w-none dark:prose-invert"
-                dangerouslySetInnerHTML={{ __html: loc === 'ar' ? a.body.ar : a.body.en }}
+                dangerouslySetInnerHTML={{ __html: a.body[loc] ?? a.body.en }}
               />
             </Reveal>
           ) : (
@@ -86,7 +86,7 @@ export default async function NewsDetailPage({
               className="inline-flex items-center gap-2 text-sm font-medium text-muted transition-colors hover:text-ink"
             >
               <span className="rtl:rotate-180">←</span>
-              {loc === 'ar' ? 'العودة إلى الأخبار' : 'Back to news'}
+              {tr({ en: 'Back to news', ar: 'العودة إلى الأخبار' })}
             </Link>
           </Reveal>
         </div>
@@ -94,8 +94,8 @@ export default async function NewsDetailPage({
 
       <CTASection
         locale={loc}
-        title={loc === 'ar' ? 'هل أنت مستعد لبدء المحادثة؟' : 'Ready to start the conversation?'}
-        primary={{ label: loc === 'ar' ? 'تواصل معنا' : 'Contact us', href: '/contact' }}
+        title={tr({ en: 'Ready to start the conversation?', ar: 'هل أنت مستعد لبدء المحادثة؟' })}
+        primary={{ label: tr({ en: 'Contact us', ar: 'تواصل معنا' }), href: '/contact' }}
       />
     </>
   );

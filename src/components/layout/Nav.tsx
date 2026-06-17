@@ -76,11 +76,11 @@ export function Nav({ locale }: { locale: Locale }) {
               <button
                 type="button"
                 onClick={() => setMenuOpen(true)}
-                aria-label={locale === 'ar' ? 'القائمة' : 'Menu'}
+                aria-label={tr({ en: 'Menu', ar: 'القائمة' })}
                 aria-expanded={menuOpen}
                 className={cn('flex items-center gap-2 transition-colors', onDark ? 'text-white' : 'text-ink')}
               >
-                <span className="hidden text-sm font-medium md:inline">{locale === 'ar' ? 'القائمة' : 'Menu'}</span>
+                <span className="hidden text-sm font-medium md:inline">{tr({ en: 'Menu', ar: 'القائمة' })}</span>
                 <span className="flex flex-col gap-[5px]">
                   <span className={cn('block h-[2px] w-6', onDark ? 'bg-white' : 'bg-ink')} />
                   <span className={cn('block h-[2px] w-6', onDark ? 'bg-white' : 'bg-ink')} />

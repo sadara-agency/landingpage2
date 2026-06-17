@@ -97,7 +97,7 @@ export default async function AthleteProfilePage({
             <Tag tone={a.tier === 'A+' ? 'gold' : 'blue'}>{a.tier}</Tag>
             <Tag tone="neutral">{tr(a.sport)}</Tag>
             <Tag tone="neutral">{tr(a.club)}</Tag>
-            {a.featured && <Tag tone="cyan">{loc === 'ar' ? 'القضية المميَّزة' : 'Featured case'}</Tag>}
+            {a.featured && <Tag tone="cyan">{tr({ en: 'Featured case', ar: 'القضية المميَّزة' })}</Tag>}
           </div>
           <RevealGroup className="grid grid-cols-1 gap-8 sm:grid-cols-3">
             {a.stats.map((s, i) => (
@@ -116,16 +116,16 @@ export default async function AthleteProfilePage({
 
       <SplitBand
         locale={loc}
-        kicker={loc === 'ar' ? 'المسار' : 'Trajectory'}
-        title={loc === 'ar' ? 'من الاكتشاف إلى القيمة.' : 'From discovery to value.'}
+        kicker={tr({ en: 'Trajectory', ar: 'المسار' })}
+        title={tr({ en: 'From discovery to value.', ar: 'من الاكتشاف إلى القيمة.' })}
         body={tr(a.trajectory)}
         tone="electric"
       />
 
       <SplitBand
         locale={loc}
-        kicker={loc === 'ar' ? 'القيمة الإعلامية' : 'Media value'}
-        title={loc === 'ar' ? 'القيمة السوقية والحضور.' : 'Market value and presence.'}
+        kicker={tr({ en: 'Media value', ar: 'القيمة الإعلامية' })}
+        title={tr({ en: 'Market value and presence.', ar: 'القيمة السوقية والحضور.' })}
         body={tr(a.mediaValue)}
         reverse
       />
@@ -139,7 +139,7 @@ export default async function AthleteProfilePage({
               className="inline-flex items-center gap-2 text-sm font-medium text-muted transition-colors hover:text-ink"
             >
               <span className="rtl:rotate-180">←</span>
-              {loc === 'ar' ? 'العودة إلى القائمة' : 'Back to the roster'}
+              {tr({ en: 'Back to the roster', ar: 'العودة إلى القائمة' })}
             </Link>
           </Reveal>
         </div>
@@ -147,9 +147,9 @@ export default async function AthleteProfilePage({
 
       <CTASection
         locale={loc}
-        title={loc === 'ar' ? 'مثل هذا اللاعب يبدأ بمحادثة.' : 'A career like this starts with a conversation.'}
-        primary={{ label: loc === 'ar' ? 'قدّم طلب تمثيل' : 'Enquire about representation', href: '/talent/join' }}
-        secondary={{ label: loc === 'ar' ? 'منصة Elite 360' : 'The Elite 360 platform', href: '/talent/elite-360' }}
+        title={tr({ en: 'A career like this starts with a conversation.', ar: 'مثل هذا اللاعب يبدأ بمحادثة.' })}
+        primary={{ label: tr({ en: 'Enquire about representation', ar: 'قدّم طلب تمثيل' }), href: '/talent/join' }}
+        secondary={{ label: tr({ en: 'The Elite 360 platform', ar: 'منصة Elite 360' }), href: '/talent/elite-360' }}
       />
     </>
   );

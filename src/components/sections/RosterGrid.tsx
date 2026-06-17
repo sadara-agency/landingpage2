@@ -30,7 +30,7 @@ export function RosterGrid({ locale, athletes }: { locale: Locale; athletes: Ros
       <div className="wrap">
         <div className="mb-10 flex flex-wrap items-center gap-3">
           <FilterChip active={!tier && !position} onClick={() => { setTier(null); setPosition(null); }}>
-            {locale === 'ar' ? 'الكل' : 'All'}
+            {tr({ en: 'All', ar: 'الكل' })}
           </FilterChip>
           <span className="mx-1 h-5 w-px bg-hairline" aria-hidden="true" />
           {TIERS.map((t) => (
@@ -50,7 +50,7 @@ export function RosterGrid({ locale, athletes }: { locale: Locale; athletes: Ros
             ))}
           </AnimatePresence>
         </motion.div>
-        {filtered.length === 0 && <p className="py-16 text-center text-muted">{locale === 'ar' ? 'لا نتائج.' : 'No results.'}</p>}
+        {filtered.length === 0 && <p className="py-16 text-center text-muted">{tr({ en: 'No results.', ar: 'لا نتائج.' })}</p>}
       </div>
     </section>
   );
@@ -79,7 +79,7 @@ function AthleteCard({ locale, athlete: a }: { locale: Locale; athlete: RosterAt
         <img src={a.photoUrl} alt={tr(a.name)} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
         <div className="absolute inset-x-0 top-0 flex items-center justify-between p-3">
           <Tag tone={a.tier === 'A+' ? 'gold' : 'blue'}>{a.tier}</Tag>
-          {a.featured && <Tag tone="cyan">{locale === 'ar' ? 'مميَّز' : 'Featured'}</Tag>}
+          {a.featured && <Tag tone="cyan">{tr({ en: 'Featured', ar: 'مميَّز' })}</Tag>}
         </div>
       </div>
       <div className="p-5">

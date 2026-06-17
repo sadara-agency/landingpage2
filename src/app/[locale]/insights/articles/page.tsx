@@ -29,13 +29,13 @@ export default async function ArticlesPage({ params }: { params: Promise<{ local
     <>
       <PageHero
         locale={loc}
-        kicker={loc === 'ar' ? 'رؤى وأخبار' : 'Insights & News'}
+        kicker={tr({ en: 'Insights & News', ar: 'رؤى وأخبار' })}
         title={tr(meta.title)}
         lead={tr(meta.lead)}
         image={images.pageHero.insights}
         crumbs={[
-          { label: loc === 'ar' ? 'الرئيسية' : 'Home', href: '/' },
-          { label: loc === 'ar' ? 'رؤى وأخبار' : 'Insights', href: '/insights' },
+          { label: tr({ en: 'Home', ar: 'الرئيسية' }), href: '/' },
+          { label: tr({ en: 'Insights', ar: 'رؤى وأخبار' }), href: '/insights' },
           { label: tr(meta.title) },
         ]}
       />

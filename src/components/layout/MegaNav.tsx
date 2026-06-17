@@ -40,7 +40,7 @@ export function MegaNav({ locale, open, onClose }: { locale: Locale; open: boole
       ref={panelRef}
       role="dialog"
       aria-modal="true"
-      aria-label={locale === 'ar' ? 'القائمة' : 'Menu'}
+      aria-label={tr({ en: 'Menu', ar: 'القائمة' })}
       tabIndex={-1}
       className="fixed inset-0 z-[60] flex flex-col overflow-y-auto bg-navy text-white outline-none animate-fade-up"
     >
@@ -61,7 +61,7 @@ export function MegaNav({ locale, open, onClose }: { locale: Locale; open: boole
           <button
             type="button"
             onClick={onClose}
-            aria-label={locale === 'ar' ? 'إغلاق' : 'Close'}
+            aria-label={tr({ en: 'Close', ar: 'إغلاق' })}
             className="text-3xl leading-none text-white/80 transition-colors hover:text-white"
           >
             ✕
@@ -77,10 +77,10 @@ export function MegaNav({ locale, open, onClose }: { locale: Locale; open: boole
       {/* Utility row */}
       <div className="relative z-10 mx-auto flex w-full max-w-wrap shrink-0 flex-wrap items-center gap-x-8 gap-y-3 border-t border-white/10 px-6 py-6 text-sm text-white/55 md:px-10">
         <Link href={localeHref(locale, '/institution/about')} onClick={onClose} className="transition-colors hover:text-white">
-          {locale === 'ar' ? 'من نحن' : 'About'}
+          {tr({ en: 'About', ar: 'من نحن' })}
         </Link>
         <Link href={localeHref(locale, '/careers')} onClick={onClose} className="transition-colors hover:text-white">
-          {locale === 'ar' ? 'الوظائف' : 'Careers'}
+          {tr({ en: 'Careers', ar: 'الوظائف' })}
         </Link>
         <Link href={localeHref(locale, '/contact')} onClick={onClose} className="transition-colors hover:text-white">
           {tr(cta.contact)}

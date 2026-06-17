@@ -22,7 +22,7 @@ export function HomeUnits({ locale }: { locale: Locale }) {
                 <p className="mt-2 text-sm font-medium text-muted">{tr(u.tagline)}</p>
                 <p className="mt-4 text-sm leading-relaxed text-muted">{tr(u.desc)}</p>
                 <span className="mt-auto inline-flex items-center gap-2 pt-7 text-sm font-medium text-electric">
-                  {locale === 'ar' ? 'استكشف' : 'Explore'}
+                  {tr({ en: 'Explore', ar: 'استكشف' })}
                   <span className="inline-block transition-transform group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1">→</span>
                 </span>
               </Link>

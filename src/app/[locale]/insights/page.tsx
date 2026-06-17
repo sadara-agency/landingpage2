@@ -32,14 +32,14 @@ export default async function InsightsPage({ params }: { params: Promise<{ local
         title={tr(insightsMeta.title)}
         lead={tr(insightsMeta.lead)}
         image={images.pageHero.insights}
-        crumbs={[{ label: loc === 'ar' ? 'الرئيسية' : 'Home', href: '/' }, { label: tr(insightsMeta.kicker) }]}
+        crumbs={[{ label: tr({ en: 'Home', ar: 'الرئيسية' }), href: '/' }, { label: tr(insightsMeta.kicker) }]}
       />
       <ArticleList locale={loc} items={items} />
       <CTASection
         locale={loc}
-        title={loc === 'ar' ? 'للاستفسارات الإعلامية.' : 'For media enquiries.'}
-        primary={{ label: loc === 'ar' ? 'الحقيبة الإعلامية' : 'Press kit', href: '/insights/press-kit' }}
-        secondary={{ label: loc === 'ar' ? 'تواصل' : 'Contact', href: '/contact' }}
+        title={tr({ en: 'For media enquiries.', ar: 'للاستفسارات الإعلامية.' })}
+        primary={{ label: tr({ en: 'Press kit', ar: 'الحقيبة الإعلامية' }), href: '/insights/press-kit' }}
+        secondary={{ label: tr({ en: 'Contact', ar: 'تواصل' }), href: '/contact' }}
       />
     </>
   );
