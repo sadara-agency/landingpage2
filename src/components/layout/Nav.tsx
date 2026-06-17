@@ -48,15 +48,17 @@ export function Nav({ locale }: { locale: Locale }) {
         )}
       >
         <div className="wrap flex h-[var(--header-h)] items-center gap-6">
-          <Link href={localeHref(locale, '/')} aria-label="Sadara home">
-            {onDark ? (
-              // Over the dark hero: designer's baked white lockup.
-              <LogoLockup variant="reverse" className={isHome ? 'h-11' : 'h-8'} />
-            ) : (
-              // Solid paper header (scrolled, interior pages): font-rendered lockup.
-              <Logo tone="ink" size={isHome ? 'lg' : 'sm'} />
-            )}
-          </Link>
+          {/* On the homepage the pillar block IS the brand — hide the header logo
+              so it doesn't overlap the large pillar text. */}
+          {!isHome && (
+            <Link href={localeHref(locale, '/')} aria-label="Sadara home">
+              {onDark ? (
+                <LogoLockup variant="reverse" className="h-8" />
+              ) : (
+                <Logo tone="ink" size="sm" />
+              )}
+            </Link>
+          )}
 
           <div className="ms-auto flex items-center gap-3">
             {/* On the homepage, CAA shows only the logo — no chrome in the top bar. */}

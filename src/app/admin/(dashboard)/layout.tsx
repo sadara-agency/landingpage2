@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { AdminShell } from '@/components/admin/AdminShell';
+import { AdminPrefsProvider } from '@/components/admin/AdminPrefsContext';
 import { getSessionUser } from '@/lib/supabase/server';
 import { supabaseConfigured } from '@/lib/supabase/service';
 
@@ -34,5 +35,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
     );
   }
 
-  return <AdminShell email={user.email ?? null} isAdmin={isAdmin}>{children}</AdminShell>;
+  return (
+    <AdminPrefsProvider>
+      <AdminShell email={user.email ?? null} isAdmin={isAdmin}>{children}</AdminShell>
+    </AdminPrefsProvider>
+  );
 }
