@@ -88,7 +88,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "try{var s=sessionStorage.getItem('sadara_intro_seen');document.documentElement.dataset.intro=s?'seen':'show'}catch(e){document.documentElement.dataset.intro='seen'}",
+              "try{var s=localStorage.getItem('sadara_intro_seen');document.documentElement.dataset.intro=s?'seen':'show'}catch(e){document.documentElement.dataset.intro='seen'}",
           }}
         />
       </head>
