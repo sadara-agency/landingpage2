@@ -15,8 +15,11 @@ html[data-intro='seen'] .sl-intro {
   background: #0a0c18;
   display: grid;
   place-items: center;
-  transform: translateY(0);
-  animation: sl-lift 0.9s cubic-bezier(0.76, 0, 0.24, 1) 2.75s forwards;
+}
+
+/* JS adds .sl-done after 2750ms hold — triggers the lift (matches prototype) */
+.sl-intro.sl-done {
+  animation: sl-lift 0.9s cubic-bezier(0.76, 0, 0.24, 1) forwards;
 }
 
 /* The blurred brand-blue slab that sweeps L→R and "prints" the logo. */
@@ -138,21 +141,18 @@ html[data-intro='seen'] .sl-intro {
 
 /* Reduced motion: skip wipe/accents — just a 400ms fade-out. */
 @media (prefers-reduced-motion: reduce) {
-  .sl-intro {
-    transform: none;
-    animation: sl-fade 0.4s ease 0s forwards;
-  }
   .sl-slab,
-  .sl-wipe,
   .sl-emblem .point,
   .sl-emblem .ring {
     animation: none;
+    display: none;
   }
   .sl-wipe {
+    animation: none;
     clip-path: none;
   }
-  .sl-slab {
-    display: none;
+  .sl-intro.sl-done {
+    animation: sl-fade 0.4s ease forwards;
   }
 
   @keyframes sl-fade {
