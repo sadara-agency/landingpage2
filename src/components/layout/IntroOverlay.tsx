@@ -1,41 +1,46 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SadaraLogo } from './SadaraLogo';
 import './intro.css';
 
 /**
  * One-time cinematic logo intro. Plays once per browser session.
  *
- * No-flash: an inline <head> script (see app/layout.tsx) reads the
- * sessionStorage flag before first paint and sets
- * document.documentElement.dataset.intro = "seen" | "show". CSS hides the
- * overlay instantly when "seen". This component reads the same flag, plays
- * when "show", writes the flag, then unmounts after the lift finishes.
- *
- * The overlay is position:fixed on top of the already server-rendered page —
- * it never gates the homepage, so LCP/SEO are unaffected.
+ * Render path:
+ * - SSR: always outputs the overlay markup (position:fixed, z-index 9999).
+ * - Returning visitor: head script sets data-intro="seen" before first paint;
+ *   CSS rule `html[data-intro="seen"] .sl-intro { display:none }` hides it
+ *   instantly — no flash, no animation, React unmounts it after hydration.
+ * - Fresh visitor: data-intro="show", overlay is visible from t=0 so CSS
+ *   animations fire immediately on the real DOM node. React writes sessionStorage
+ *   and unmounts after the lift animation ends (~3.7s).
  */
 export function IntroOverlay() {
-  const [show, setShow] = useState(false);
+  const [mounted, setMounted] = useState(true);
+  const isIntro = useRef(false);
 
   useEffect(() => {
-    if (document.documentElement.dataset.intro !== 'show') return;
-    // Mark seen immediately so internal nav / back button never replays it.
-    try {
-      sessionStorage.setItem('sadara_intro_seen', '1');
-    } catch {
-      /* sessionStorage unavailable (private mode) — still play this once */
+    isIntro.current = document.documentElement.dataset.intro === 'show';
+
+    if (isIntro.current) {
+      // Mark seen so SPA nav / back-button never replays.
+      document.documentElement.dataset.intro = 'seen';
+      try {
+        sessionStorage.setItem('sadara_intro_seen', '1');
+      } catch {
+        /* private mode */
+      }
+    } else {
+      // Returning visitor: hidden by CSS, just unmount immediately.
+      setMounted(false);
     }
-    document.documentElement.dataset.intro = 'seen';
-    setShow(true);
   }, []);
 
-  if (!show) return null;
+  if (!mounted) return null;
 
-  // Unmount when the lift (or reduced-motion fade) animation completes on the root.
   const handleAnimationEnd = (e: React.AnimationEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) setShow(false);
+    if (e.target === e.currentTarget) setMounted(false);
   };
 
   return (
