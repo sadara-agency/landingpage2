@@ -5,7 +5,7 @@ export function ComingSoon({
   backHref = '/',
   backLabel = 'Go home',
   title = 'Coming soon.',
-  lead = 'We're working on this. Check back shortly.',
+  lead = "We're working on this. Check back shortly.",
   kicker = 'In progress',
 }: {
   backHref?: string;
