@@ -79,7 +79,7 @@ export default async function AthleteProfilePage({
       />
       <PageHero
         locale={loc}
-        kicker={`${a.tier} · ${tr(a.position)}`}
+        kicker={tr(a.position)}
         title={tr(a.name)}
         lead={tr(a.bio)}
         image={a.photoUrl}
@@ -94,7 +94,6 @@ export default async function AthleteProfilePage({
       <section className="relative border-t border-hairline bg-canvas py-12">
         <div className="wrap relative">
           <div className="mb-8 flex flex-wrap items-center gap-3">
-            <Tag tone={a.tier === 'A+' ? 'gold' : 'blue'}>{a.tier}</Tag>
             <Tag tone="neutral">{tr(a.sport)}</Tag>
             <Tag tone="neutral">{tr(a.club)}</Tag>
             {a.featured && <Tag tone="cyan">{tr({ en: 'Featured case', ar: 'القضية المميَّزة' })}</Tag>}
