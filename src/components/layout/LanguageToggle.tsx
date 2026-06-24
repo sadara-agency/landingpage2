@@ -11,6 +11,11 @@ export function LanguageToggle({ locale, className }: { locale: Locale; classNam
   const target = otherLocale(locale);
   const href = `/${target}${stripLocale(pathname) === '/' ? '' : stripLocale(pathname)}`;
 
-  // Single-locale mode — toggle hidden until Arabic is re-enabled.
-  return null;
+  const label = target === 'ar' ? 'عربي' : 'EN';
+
+  return (
+    <Link href={href} className={cn('text-sm font-medium transition-opacity hover:opacity-70', className)}>
+      {label}
+    </Link>
+  );
 }
