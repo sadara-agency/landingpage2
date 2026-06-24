@@ -82,7 +82,6 @@ export function MagneticPillars_v4({ locale }: { locale: Locale }) {
       >
         {homePillars.map((p) => (
           <div key={p.key} className={cn('absolute', active === p.key ? 'relative' : 'hidden')}>
-            <span className="mb-5 block font-mono text-[11px] uppercase tracking-[0.18em] text-white/45">{tr(p.label)}</span>
             <ul className="flex flex-col gap-3">
               {p.children.map((c) => (
                 <li key={c.href}>
