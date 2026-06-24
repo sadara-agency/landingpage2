@@ -1,12 +1,28 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 
+const LOCALES = ['ar', 'en'] as const;
+const DEFAULT_LOCALE = 'en';
+
 // Refreshes the Supabase auth session cookie on admin routes so server
-// components see a current session. Public site routes are untouched.
+// components see a current session. Redirects bare / to the default locale.
 export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+
+  // Redirect bare root to default locale.
+  if (pathname === '/') {
+    return NextResponse.redirect(new URL(`/${DEFAULT_LOCALE}`, req.url));
+  }
+
+  // Redirect unknown locale segments (e.g. /fr/...) to default locale path.
+  const firstSegment = pathname.split('/')[1];
+  if (firstSegment && !LOCALES.includes(firstSegment as (typeof LOCALES)[number]) && !pathname.startsWith('/admin') && !pathname.startsWith('/api') && !pathname.startsWith('/_next') && !pathname.includes('.')) {
+    return NextResponse.redirect(new URL(`/${DEFAULT_LOCALE}${pathname}`, req.url));
+  }
+
   const res = NextResponse.next({ request: req });
 
-  // Only run on /admin (login is public but still needs the client for session).
+  // Only run Supabase session refresh on /admin.
   if (!req.nextUrl.pathname.startsWith('/admin')) return res;
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -29,5 +45,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/', '/((?!_next/static|_next/image|favicon|brand|fonts|manifest).*)'],
 };
