@@ -1,31 +1,16 @@
-import type { Bi } from '@/lib/i18n';
+-- web-caa CMS — seed fallback insights articles into the DB
+-- Run in Supabase SQL Editor. Idempotent: safe to re-run (slug is unique, ON CONFLICT DO NOTHING).
+--
+-- These 5 articles previously lived only as a hardcoded fallback in
+-- web/src/content/insights.ts, used when the `articles` table had no rows.
+-- That made them invisible to /admin — this migration makes them real rows
+-- so they're fully manageable from the CMS. After confirming they appear
+-- correctly in admin + the public Insights page, the fallback code in
+-- web/src/content/insights.ts and web/src/lib/content/insights.ts is removed.
 
-export type Article = {
-  category: Bi;
-  title: Bi;
-  excerpt: Bi;
-  body?: Bi;
-  date: string;
-  type: 'news' | 'article';
-};
-
-export const insightsMeta = {
-  kicker: { ar: 'رؤى وأخبار', en: 'Insights & News' } as Bi,
-  title: { ar: 'الصوت المؤسسي.', en: 'The institutional voice.' } as Bi,
-  lead: {
-    ar: 'وجهة نظرٍ في السوق، وأخبارٌ ومحطّات، ومحرّك مصداقيّة يعكس كيف نفكّر — لا فقط ما نفعل.',
-    en: 'Market point of view, news and milestones, and a credibility engine that reflects how we think — not just what we do.',
-  } as Bi,
-};
-
-export const articles: Article[] = [
-  {
-    category: { ar: 'رؤية السوق', en: 'Market POV' },
-    title: { ar: 'لماذا 2034 يعيد تعريف اقتصاد كرة القدم في المنطقة', en: "Why 2034 redefines the region's football economy" },
-    excerpt: { ar: 'استضافة كأس العالم ليست حدثاً، بل تحوّلٌ في بنية القيمة الرياضية المحليّة.', en: 'Hosting the World Cup is not an event but a shift in the structure of local sporting value.' },
-    body: {
-      ar: '',
-      en: `<p>There are two ways to read 2034. The first treats it as a tournament — a thing to be staged, with stadiums, logistics, and a closing ceremony, after which life returns to its previous shape. The second treats it as a forcing function: a fixed date that re-rates every asset in the local game and changes, permanently, how value in the regional football economy is structured. The first reading plans an event. The second builds an institution. They are not the same project.</p>
+insert into public.articles (slug, category_ar, category_en, title_ar, title_en, excerpt_ar, excerpt_en, body_ar, body_en, date, type, image_url, sort, published)
+values
+('why-2034-redefines-the-region-s-football-economy', 'رؤية السوق', 'Market POV', 'لماذا 2034 يعيد تعريف اقتصاد كرة القدم في المنطقة', 'Why 2034 redefines the region''s football economy', 'استضافة كأس العالم ليست حدثاً، بل تحوّلٌ في بنية القيمة الرياضية المحليّة.', 'Hosting the World Cup is not an event but a shift in the structure of local sporting value.', '', '<p>There are two ways to read 2034. The first treats it as a tournament — a thing to be staged, with stadiums, logistics, and a closing ceremony, after which life returns to its previous shape. The second treats it as a forcing function: a fixed date that re-rates every asset in the local game and changes, permanently, how value in the regional football economy is structured. The first reading plans an event. The second builds an institution. They are not the same project.</p>
 
 <h2>01 — Event versus structure</h2>
 <h3>What actually gets re-rated</h3>
@@ -56,20 +41,10 @@ export const articles: Article[] = [
 
 <p>For everyone operating in this market, 2034 reframes the question. It is no longer "how do we win the next window." It is "what will still be standing, and trusted, on the other side of the decade." That is a question about structure — units, mandates, governance, talent pathways, a record that compounds. The tournament will be staged regardless. The economy it leaves behind will belong to whoever treated the date as a reason to build, not a reason to spend.</p>
 
-<p><em>Market POV. Forward-looking analysis of structural trends. It is not a forecast of any specific asset value or transaction.</em></p>`,
-    },
-    date: '2026',
-    type: 'article',
-  },
-  {
-    category: { ar: 'أخبار', en: 'News' },
-    title: { ar: 'صدارة توسّع مكتب الصفقات نحو ممرات جديدة', en: 'Sadara expands the deal desk into new corridors' },
-    excerpt: { ar: 'إضافة ممرّين جديدين تعزّز قدرة المكتب على توطين الأصول.', en: "Two new corridors strengthen the desk's ability to place assets." },
-    body: {
-      ar: '',
-      en: `<p>Sadara Sports has expanded its Deal Desk with two new corridors — a Lusophone corridor connecting the Portuguese-speaking markets, and a Maghreb corridor across North Africa — strengthening the desk's ability to source, structure, and place assets between those markets and the Gulf.</p>
+<p><em>Market POV. Forward-looking analysis of structural trends. It is not a forecast of any specific asset value or transaction.</em></p>', '2026', 'article', NULL, 0, true),
+('sadara-expands-the-deal-desk-into-new-corridors', 'أخبار', 'News', 'صدارة توسّع مكتب الصفقات نحو ممرات جديدة', 'Sadara expands the deal desk into new corridors', 'إضافة ممرّين جديدين تعزّز قدرة المكتب على توطين الأصول.', 'Two new corridors strengthen the desk''s ability to place assets.', '', '<p>Sadara Sports has expanded its Deal Desk with two new corridors — a Lusophone corridor connecting the Portuguese-speaking markets, and a Maghreb corridor across North Africa — strengthening the desk''s ability to source, structure, and place assets between those markets and the Gulf.</p>
 
-<p>A corridor, in the desk's language, is more than a list of contacts. It is a maintained route between two markets: the clubs and intermediaries that matter, the regulatory and registration realities of moving an asset along it, and a standing read on where value is mispriced in each direction. Opening a corridor means the desk can act on a transaction inside it with knowledge rather than from a cold start.</p>
+<p>A corridor, in the desk''s language, is more than a list of contacts. It is a maintained route between two markets: the clubs and intermediaries that matter, the regulatory and registration realities of moving an asset along it, and a standing read on where value is mispriced in each direction. Opening a corridor means the desk can act on a transaction inside it with knowledge rather than from a cold start.</p>
 
 <h2>01 — What the desk does</h2>
 <h3>Placing assets, both directions</h3>
@@ -82,24 +57,14 @@ export const articles: Article[] = [
 <h3>Depth on one side, mobility on the other</h3>
 
 <ul>
-  <li><strong>Lusophone corridor</strong> — Access to one of football's deepest, most liquid talent pools, with established pathways into Europe and the Gulf.</li>
+  <li><strong>Lusophone corridor</strong> — Access to one of football''s deepest, most liquid talent pools, with established pathways into Europe and the Gulf.</li>
   <li><strong>Maghreb corridor</strong> — Regional depth and mobility close to home — strong development systems, natural proximity to the Saudi game.</li>
 </ul>
 
-<p>Both corridors operate under the firm's documented conflict walls, separating the Deal Desk's transaction activity from the Representation and Advisory units. The expansion takes the desk's active corridors to a wider footprint as it builds toward the heightened cross-border activity expected across the regional game in the seasons ahead.</p>
+<p>Both corridors operate under the firm''s documented conflict walls, separating the Deal Desk''s transaction activity from the Representation and Advisory units. The expansion takes the desk''s active corridors to a wider footprint as it builds toward the heightened cross-border activity expected across the regional game in the seasons ahead.</p>
 
-<p><em>News. Deal Desk activity is conducted under documented conflict walls separating it from Representation and Advisory. Corridor names are operational designations within Sadara.</em></p>`,
-    },
-    date: '2026',
-    type: 'news',
-  },
-  {
-    category: { ar: 'الصوت المؤسسي', en: 'Institutional voice' },
-    title: { ar: 'من وكالة إلى مؤسسة: منطق التحوّل', en: 'From agency to institution: the logic of the pivot' },
-    excerpt: { ar: 'لماذا اخترنا بناء مؤسسةٍ بثلاث وحدات بدل توسيع قائمة الخدمات.', en: 'Why we chose to build a three-unit institution instead of expanding a service list.' },
-    body: {
-      ar: '',
-      en: `<p>There were two ways to grow. We could keep the agency and lengthen the list of things it does — add advisory, add a transactions arm, add a media capability — until the brochure was full. Or we could stop being an agency and build an institution: three units, each with its own mandate, its own discipline, and its own accountability, connected by governance rather than by overlap. We chose the harder one, and the choice was deliberate.</p>
+<p><em>News. Deal Desk activity is conducted under documented conflict walls separating it from Representation and Advisory. Corridor names are operational designations within Sadara.</em></p>', '2026', 'news', NULL, 1, true),
+('from-agency-to-institution-the-logic-of-the-pivot', 'الصوت المؤسسي', 'Institutional voice', 'من وكالة إلى مؤسسة: منطق التحوّل', 'From agency to institution: the logic of the pivot', 'لماذا اخترنا بناء مؤسسةٍ بثلاث وحدات بدل توسيع قائمة الخدمات.', 'Why we chose to build a three-unit institution instead of expanding a service list.', '', '<p>There were two ways to grow. We could keep the agency and lengthen the list of things it does — add advisory, add a transactions arm, add a media capability — until the brochure was full. Or we could stop being an agency and build an institution: three units, each with its own mandate, its own discipline, and its own accountability, connected by governance rather than by overlap. We chose the harder one, and the choice was deliberate.</p>
 
 <h2>01 — The service-list trap</h2>
 <h3>Why adding more does not compound</h3>
@@ -126,20 +91,10 @@ export const articles: Article[] = [
 
 <p>And the timing is not incidental. The Saudi game is being re-rated toward 2034. Re-ratings reward durability. A firm that is only a collection of relationships is fragile precisely when the market is most valuable. An institution — units, mandates, governance, a record that survives any single departure — is built to be standing, and trusted, on the far side of the decade. That is what the pivot was for.</p>
 
-<p><em>Institutional Voice. This piece describes Sadara's operating model. Mandates within each unit are governed independently.</em></p>`,
-    },
-    date: '2026',
-    type: 'article',
-  },
-  {
-    category: { ar: 'رؤية السوق', en: 'Market POV' },
-    title: { ar: 'الذكاء كميزةٍ تنافسيّة للأندية السعودية', en: 'Intelligence as a competitive edge for Saudi clubs' },
-    excerpt: { ar: 'كيف يحوّل ذكاء القرار التوظيف من تخمينٍ إلى عمليّة.', en: 'How decision intelligence turns recruitment from a guess into a process.' },
-    body: {
-      ar: '',
-      en: `<p>Most recruitment failures are not scouting failures. The player was seen, the talent was real, the highlight reel was accurate. What broke was the decision around the player — the question that was never defined, the disagreement that was never resolved, the cost of being wrong that was never priced. Talent identification is a crowded discipline. Decision-making is not.</p>
+<p><em>Institutional Voice. This piece describes Sadara''s operating model. Mandates within each unit are governed independently.</em></p>', '2026', 'article', NULL, 2, true),
+('intelligence-as-a-competitive-edge-for-saudi-clubs', 'رؤية السوق', 'Market POV', 'الذكاء كميزةٍ تنافسيّة للأندية السعودية', 'Intelligence as a competitive edge for Saudi clubs', 'كيف يحوّل ذكاء القرار التوظيف من تخمينٍ إلى عمليّة.', 'How decision intelligence turns recruitment from a guess into a process.', '', '<p>Most recruitment failures are not scouting failures. The player was seen, the talent was real, the highlight reel was accurate. What broke was the decision around the player — the question that was never defined, the disagreement that was never resolved, the cost of being wrong that was never priced. Talent identification is a crowded discipline. Decision-making is not.</p>
 
-<p>Saudi clubs have, in a very short window, gained access to the one resource that used to separate Europe's elite from everyone else: capital. That changes the game, but not in the direction most people assume. Capital does not buy good decisions. It amplifies whatever decision process a club already has. A disciplined process compounds; a guess, repeated at scale, becomes an expensive habit.</p>
+<p>Saudi clubs have, in a very short window, gained access to the one resource that used to separate Europe''s elite from everyone else: capital. That changes the game, but not in the direction most people assume. Capital does not buy good decisions. It amplifies whatever decision process a club already has. A disciplined process compounds; a guess, repeated at scale, becomes an expensive habit.</p>
 
 <h2>01 — The cost of the guess</h2>
 <h3>The hidden line on the balance sheet</h3>
@@ -161,7 +116,7 @@ export const articles: Article[] = [
   <li><strong>Decision</strong> — The governance of the choice: who decides, on what evidence, with what threshold to walk away.</li>
 </ol>
 
-<p>The third layer is the one clubs neglect, and the one that determines outcomes. A model and a scout who agree tell you little; the interesting cases are where they don't — and a club needs a rule for what happens then.</p>
+<p>The third layer is the one clubs neglect, and the one that determines outcomes. A model and a scout who agree tell you little; the interesting cases are where they don''t — and a club needs a rule for what happens then.</p>
 
 <h2>03 — Why this matters more here</h2>
 <h3>The 2034 window changes the math</h3>
@@ -170,18 +125,8 @@ export const articles: Article[] = [
 
 <p>That is what decision intelligence delivers: not certainty, which no one can sell honestly, but a record. A repeatable process that turns a recruitment department from a group of talented individuals making isolated bets into an institution that gets measurably better at deciding. The guess does not disappear. It gets smaller, every season, on purpose.</p>
 
-<p><em>Market POV. Sadara publishes market views to inform the ecosystem. They are general analysis, not advice on any specific transaction or club.</em></p>`,
-    },
-    date: '2026',
-    type: 'article',
-  },
-  {
-    category: { ar: 'الصوت المؤسسي', en: 'Institutional voice' },
-    title: { ar: 'الحوكمة ليست عبئاً، بل ميزة', en: "Governance is not a burden — it's an advantage" },
-    excerpt: { ar: 'لماذا تبني الجدرانُ الواضحة ضدّ تضارب المصالح ثقةً تُترجَم إلى قيمة.', en: 'Why clear conflict walls build trust that translates into value.' },
-    body: {
-      ar: '',
-      en: `<p>In sports management, one firm can advise a club, represent the player it is considering, and structure the deal that moves him. The industry treats that overlap as efficiency. We treat it as the single largest source of mistrust in the market — and therefore the single largest opportunity for an institution willing to do the opposite.</p>
+<p><em>Market POV. Sadara publishes market views to inform the ecosystem. They are general analysis, not advice on any specific transaction or club.</em></p>', '2026', 'article', NULL, 3, true),
+('governance-is-not-a-burden-it-s-an-advantage', 'الصوت المؤسسي', 'Institutional voice', 'الحوكمة ليست عبئاً، بل ميزة', 'Governance is not a burden — it''s an advantage', 'لماذا تبني الجدرانُ الواضحة ضدّ تضارب المصالح ثقةً تُترجَم إلى قيمة.', 'Why clear conflict walls build trust that translates into value.', '', '<p>In sports management, one firm can advise a club, represent the player it is considering, and structure the deal that moves him. The industry treats that overlap as efficiency. We treat it as the single largest source of mistrust in the market — and therefore the single largest opportunity for an institution willing to do the opposite.</p>
 
 <p>The instinct, when you hold three roles, is to collapse them. Why separate what you could bundle? Because the value is not in the bundle. It is in the visible separation. A counterparty who can see exactly where your interests sit, and where they are walled off from the conversation they are having with you, will move faster and pay more. Trust is not a soft outcome. It is a pricing input.</p>
 
@@ -210,24 +155,5 @@ export const articles: Article[] = [
 
 <p>This is why we publish our positions, name our units, and disclose where we step back. Governance, done in public, stops being a compliance cost and becomes a commercial asset — the one part of an institution that competitors cannot replicate by spending more. It has to be built, held, and proven, season after season. That is the point. The burden is the moat.</p>
 
-<p><em>Institutional Voice. Positions published under this banner represent the firm. Sadara maintains documented conflict walls between its Representation, Advisory, and Deal Desk units.</em></p>`,
-    },
-    date: '2026',
-    type: 'article',
-  },
-];
-
-export const pressKit = {
-  kicker: { ar: 'رؤى · الحقيبة الإعلامية', en: 'Insights · Press Kit' } as Bi,
-  title: { ar: 'الحقيبة الإعلامية.', en: 'Press kit.' } as Bi,
-  lead: {
-    ar: 'أصول العلامة، وورقة الحقائق، وجهة الاتصال الإعلامي — كل ما يحتاجه الإعلام في مكانٍ واحد.',
-    en: 'Brand assets, a fact sheet, and the media contact — everything the press needs in one place.',
-  } as Bi,
-  facts: [
-    { label: { ar: 'التأسيس', en: 'Founded' }, value: { ar: 'الرياض، السعودية', en: 'Riyadh, Saudi Arabia' } },
-    { label: { ar: 'النموذج', en: 'Model' }, value: { ar: 'ثلاث وحداتٍ استراتيجية', en: 'Three strategic units' } },
-    { label: { ar: 'التركيز', en: 'Focus' }, value: { ar: 'كرة القدم', en: 'Football' } },
-    { label: { ar: 'الترخيص', en: 'Licensing' }, value: { ar: 'متوافق مع FIFA وSAFF', en: 'FIFA & SAFF compliant' } },
-  ],
-};
+<p><em>Institutional Voice. Positions published under this banner represent the firm. Sadara maintains documented conflict walls between its Representation, Advisory, and Deal Desk units.</em></p>', '2026', 'article', NULL, 4, true)
+on conflict (slug) do nothing;

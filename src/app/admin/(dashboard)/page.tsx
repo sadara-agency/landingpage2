@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 const CARDS = [
+  { href: '/admin/analytics', title: 'Analytics', desc: 'Visitors, regions, most-viewed pages.' },
   { href: '/admin/docs/home', title: 'Home', desc: 'Hero, pillars, proof stats, CTAs.' },
   { href: '/admin/docs/nav', title: 'Navigation & Footer', desc: 'Menu, audiences, footer columns.' },
   { href: '/admin/pages', title: 'Pages', desc: 'Build custom pages from blocks.' },
