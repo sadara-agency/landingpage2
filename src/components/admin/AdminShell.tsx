@@ -21,6 +21,7 @@ const AR: Record<string, string> = {
   'Insights & Press': 'الرؤى والصحافة',
   Contact: 'التواصل',
   Images: 'الصور',
+  Analytics: 'التحليلات',
   Pages: 'الصفحات',
   Athletes: 'الرياضيون',
   'Articles & News': 'المقالات والأخبار',
@@ -46,6 +47,7 @@ const DOC_LINKS: { href: string; label: string }[] = [
 ];
 
 const LIST_LINKS = [
+  { href: '/admin/analytics', label: 'Analytics' },
   { href: '/admin/pages', label: 'Pages' },
   { href: '/admin/athletes', label: 'Athletes' },
   { href: '/admin/articles', label: 'Articles & News' },

@@ -22,6 +22,28 @@ export async function middleware(req: NextRequest) {
 
   const res = NextResponse.next({ request: req });
 
+  // Fire-and-forget page-view tracking for public /[locale]/... GET requests.
+  // Not awaited — must never add latency or block navigation.
+  if (
+    req.method === 'GET' &&
+    LOCALES.includes(firstSegment as (typeof LOCALES)[number]) &&
+    req.headers.get('sec-fetch-dest') !== 'empty' // skip RSC/prefetch fetches
+  ) {
+    const trackedPath = pathname.replace(/^\/(ar|en)/, '') || '/';
+    void fetch(new URL('/api/track', req.url), {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        // forward geo + client signals the route handler reads
+        'user-agent': req.headers.get('user-agent') ?? '',
+        'x-forwarded-for': req.headers.get('x-forwarded-for') ?? '',
+        'x-vercel-ip-country': req.headers.get('x-vercel-ip-country') ?? '',
+        'x-vercel-ip-country-region': req.headers.get('x-vercel-ip-country-region') ?? '',
+      },
+      body: JSON.stringify({ path: trackedPath, locale: firstSegment }),
+    }).catch(() => undefined);
+  }
+
   // Only run Supabase session refresh on /admin.
   if (!req.nextUrl.pathname.startsWith('/admin')) return res;
 
