@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import {
-  saveRole, deleteRole, reorderRoles, type RoleRow,
+  saveRole, deleteRole, reorderRoles, getRoleVersions, type RoleRow,
 } from '@/app/admin/(dashboard)/roles/actions';
+import { VersionHistory } from './VersionHistory';
 import { errText, SAVED_MSG } from '@/lib/admin/validate';
 import { SaveBar } from './SaveBar';
 
@@ -120,6 +121,7 @@ function RoleEditor({
   row, onCancel, onSave,
 }: { row: RoleRow; onCancel: () => void; onSave: (r: RoleRow) => void }) {
   const [draft, setDraft] = useState<RoleRow>(row);
+  const [showHistory, setShowHistory] = useState(false);
   const set = (patch: Partial<RoleRow>) => setDraft((d) => ({ ...d, ...patch }));
 
   const Pair = ({ label, ar, en, keyAr, keyEn }: {
@@ -143,7 +145,14 @@ function RoleEditor({
       >
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{row.id ? 'Edit role' : 'New role'}</h2>
-          <button onClick={onCancel} className="text-2xl" style={{ color: 'var(--adm-text-sm)' }}>✕</button>
+          <div className="flex items-center gap-4">
+            {row.id && (
+              <button onClick={() => setShowHistory(true)} className="text-sm" style={{ color: 'var(--adm-text-sm)' }}>
+                History
+              </button>
+            )}
+            <button onClick={onCancel} className="text-2xl" style={{ color: 'var(--adm-text-sm)' }}>✕</button>
+          </div>
         </div>
 
         <div className="space-y-5">
@@ -155,6 +164,14 @@ function RoleEditor({
         </div>
 
         <SaveBar published={draft.published} onCancel={onCancel} onSave={(pub) => onSave({ ...draft, published: pub })} />
+
+        {showHistory && (
+          <VersionHistory
+            fetchVersions={() => getRoleVersions(row.id!)}
+            onRestore={(snapshot) => setDraft((d) => ({ ...d, ...(snapshot as Partial<RoleRow>), id: d.id }))}
+            onClose={() => setShowHistory(false)}
+          />
+        )}
       </div>
     </div>
   );

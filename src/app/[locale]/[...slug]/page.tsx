@@ -3,15 +3,9 @@ import type { Metadata } from 'next';
 import { isLocale, type Locale, pick } from '@/lib/i18n';
 import { getPublishedPage } from '@/lib/content/pages';
 import { renderBlock } from '@/lib/blocks/registry';
-import { getSessionUser } from '@/lib/supabase/server';
+import { previewAllowed } from '@/lib/admin/preview';
 
-// True only when ?preview=1 AND the request is from a signed-in admin — a
-// guessed flag alone can never surface unpublished drafts.
-async function previewAllowed(sp: Record<string, string | string[] | undefined>): Promise<boolean> {
-  if (sp.preview !== '1') return false;
-  const { isAdmin } = await getSessionUser();
-  return isAdmin;
-}
+const SITE = 'https://www.sadarasport.sa';
 
 // Catch-all for builder-authored pages. Rendered dynamically (SSR) per request:
 // pages are created/edited at runtime in the CMS, and the shared root layout uses
@@ -32,9 +26,19 @@ export async function generateMetadata({
   const page = await getPublishedPage(slug.join('/'), await previewAllowed(await searchParams));
   if (!page) return {};
   const tr = pick(locale);
+  const title = tr({ ar: page.title_ar, en: page.title_en });
+  const description = tr({ ar: page.desc_ar, en: page.desc_en }) || undefined;
+  const canonicalUrl = page.canonical_url || `${SITE}/${locale}/${slug.join('/')}`;
   return {
-    title: tr({ ar: page.title_ar, en: page.title_en }),
-    description: tr({ ar: page.desc_ar, en: page.desc_en }) || undefined,
+    title,
+    description,
+    alternates: { canonical: canonicalUrl },
+    openGraph: {
+      title,
+      description,
+      url: canonicalUrl,
+      ...(page.og_image_url ? { images: [{ url: page.og_image_url, width: 1200, height: 630, alt: title }] } : {}),
+    },
   };
 }
 

@@ -4,6 +4,8 @@ import { revalidatePath } from 'next/cache';
 import { serviceClient } from '@/lib/supabase/service';
 import { getSessionUser } from '@/lib/supabase/server';
 import { requireFields, validateSlug, checkDuplicateSlug } from '@/lib/admin/validate';
+import { snapshotVersion, listVersions } from '@/lib/admin/versions';
+import { logAction } from '@/lib/admin/audit';
 
 export type AthleteRow = {
   id?: string;
@@ -22,6 +24,9 @@ export type AthleteRow = {
   photo_url: string | null;
   sort: number;
   published: boolean;
+  meta_description_ar: string; meta_description_en: string;
+  og_image_url: string | null;
+  canonical_url: string | null;
 };
 
 async function guard() {
@@ -43,7 +48,7 @@ export async function listAllAthletes() {
 }
 
 export async function saveAthlete(row: AthleteRow) {
-  await guard();
+  const user = await guard();
   const db = serviceClient();
 
   const bad =
@@ -58,21 +63,38 @@ export async function saveAthlete(row: AthleteRow) {
   const dup = checkDuplicateSlug(row.slug, existing ?? [], row.id);
   if (dup) return { ok: false as const, error: dup.error };
 
-  const payload = { ...row, slug: row.slug.trim(), updated_at: new Date().toISOString() };
-  const res = row.id
-    ? await db.from('athletes').update(payload).eq('id', row.id)
-    : await db.from('athletes').insert(payload);
-  if (res.error) return { ok: false as const, error: { ar: res.error.message, en: res.error.message } };
+  if (row.id) {
+    const { data: current } = await db.from('athletes').select('*').eq('id', row.id).single();
+    if (current) await snapshotVersion('athlete', row.id, current, user.id);
+  }
+
+  const payload = { ...row, slug: row.slug.trim(), updated_by: user.id, updated_at: new Date().toISOString() };
+  if (row.id) {
+    const res = await db.from('athletes').update(payload).eq('id', row.id);
+    if (res.error) return { ok: false as const, error: { ar: res.error.message, en: res.error.message } };
+    await logAction(user.id, 'update', 'athlete', row.id, row.name_en || row.slug);
+  } else {
+    const { data: created, error } = await db.from('athletes').insert(payload).select('id').single();
+    if (error) return { ok: false as const, error: { ar: error.message, en: error.message } };
+    await logAction(user.id, 'create', 'athlete', created.id, row.name_en || row.slug);
+  }
   refresh();
   return { ok: true as const };
 }
 
-export async function deleteAthlete(id: string) {
+export async function getAthleteVersions(id: string) {
   await guard();
+  return listVersions('athlete', id);
+}
+
+export async function deleteAthlete(id: string) {
+  const user = await guard();
   const db = serviceClient();
+  const { data: current } = await db.from('athletes').select('name_en, slug').eq('id', id).single();
   // Soft delete: hidden everywhere but recoverable by clearing archived_at.
   const { error } = await db.from('athletes').update({ archived_at: new Date().toISOString() }).eq('id', id);
   if (error) return { ok: false as const, error: error.message };
+  await logAction(user.id, 'delete', 'athlete', id, current?.name_en || current?.slug);
   refresh();
   return { ok: true as const };
 }

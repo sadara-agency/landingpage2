@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import {
-  saveArticle, deleteArticle, reorderArticles, type ArticleRow,
+  saveArticle, deleteArticle, reorderArticles, getArticleVersions, type ArticleRow,
 } from '@/app/admin/(dashboard)/articles/actions';
 import { ImageInput } from './ImageInput';
+import { RichTextField } from './RichTextField';
+import { VersionHistory } from './VersionHistory';
 import { errText, SAVED_MSG } from '@/lib/admin/validate';
 import { SaveBar } from './SaveBar';
 
@@ -14,6 +16,7 @@ const BLANK: ArticleRow = {
   slug: '', category_ar: '', category_en: '', title_ar: '', title_en: '',
   excerpt_ar: '', excerpt_en: '', body_ar: '', body_en: '', date: '',
   type: 'article', image_url: null, sort: 0, published: true,
+  meta_description_ar: '', meta_description_en: '', og_image_url: null, canonical_url: null,
 };
 
 export function ArticlesManager({ initial }: { initial: ArticleRow[] }) {
@@ -120,25 +123,33 @@ function ArticleEditor({
   row, onCancel, onSave,
 }: { row: ArticleRow; onCancel: () => void; onSave: (r: ArticleRow) => void }) {
   const [draft, setDraft] = useState<ArticleRow>(row);
+  const [showHistory, setShowHistory] = useState(false);
   const set = (patch: Partial<ArticleRow>) => setDraft((d) => ({ ...d, ...patch }));
 
-  const Pair = ({ label, ar, en, keyAr, keyEn, long }: {
-    label: string; ar: string; en: string; keyAr: keyof ArticleRow; keyEn: keyof ArticleRow; long?: boolean;
+  const Pair = ({ label, ar, en, keyAr, keyEn, long, rich }: {
+    label: string; ar: string; en: string; keyAr: keyof ArticleRow; keyEn: keyof ArticleRow; long?: boolean; rich?: boolean;
   }) => (
     <div className="space-y-2">
       <div className="text-sm font-medium" style={{ color: 'var(--adm-text-md)' }}>{label}</div>
-      <div className="grid gap-2 sm:grid-cols-2">
-        {long ? (
-          <textarea dir="rtl" lang="ar" rows={3} value={ar} onChange={(e) => set({ [keyAr]: e.target.value } as Partial<ArticleRow>)} className="rounded-lg px-3 py-2 text-sm" style={{ background: 'var(--adm-input-bg)', borderColor: 'var(--adm-border-md)', border: '1px solid' }} />
-        ) : (
-          <input dir="rtl" lang="ar" value={ar} onChange={(e) => set({ [keyAr]: e.target.value } as Partial<ArticleRow>)} className="h-10 rounded-lg px-3 text-sm" style={{ background: 'var(--adm-input-bg)', borderColor: 'var(--adm-border-md)', border: '1px solid' }} />
-        )}
-        {long ? (
-          <textarea dir="ltr" lang="en" rows={3} value={en} onChange={(e) => set({ [keyEn]: e.target.value } as Partial<ArticleRow>)} className="rounded-lg px-3 py-2 text-sm" style={{ background: 'var(--adm-input-bg)', borderColor: 'var(--adm-border-md)', border: '1px solid' }} />
-        ) : (
-          <input dir="ltr" lang="en" value={en} onChange={(e) => set({ [keyEn]: e.target.value } as Partial<ArticleRow>)} className="h-10 rounded-lg px-3 text-sm" style={{ background: 'var(--adm-input-bg)', borderColor: 'var(--adm-border-md)', border: '1px solid' }} />
-        )}
-      </div>
+      {rich ? (
+        <div className="grid gap-2 sm:grid-cols-2">
+          <RichTextField dir="rtl" lang="ar" placeholder="العربية" value={ar} onChange={(v) => set({ [keyAr]: v } as Partial<ArticleRow>)} />
+          <RichTextField dir="ltr" lang="en" placeholder="English" value={en} onChange={(v) => set({ [keyEn]: v } as Partial<ArticleRow>)} />
+        </div>
+      ) : (
+        <div className="grid gap-2 sm:grid-cols-2">
+          {long ? (
+            <textarea dir="rtl" lang="ar" rows={3} value={ar} onChange={(e) => set({ [keyAr]: e.target.value } as Partial<ArticleRow>)} className="rounded-lg px-3 py-2 text-sm" style={{ background: 'var(--adm-input-bg)', borderColor: 'var(--adm-border-md)', border: '1px solid' }} />
+          ) : (
+            <input dir="rtl" lang="ar" value={ar} onChange={(e) => set({ [keyAr]: e.target.value } as Partial<ArticleRow>)} className="h-10 rounded-lg px-3 text-sm" style={{ background: 'var(--adm-input-bg)', borderColor: 'var(--adm-border-md)', border: '1px solid' }} />
+          )}
+          {long ? (
+            <textarea dir="ltr" lang="en" rows={3} value={en} onChange={(e) => set({ [keyEn]: e.target.value } as Partial<ArticleRow>)} className="rounded-lg px-3 py-2 text-sm" style={{ background: 'var(--adm-input-bg)', borderColor: 'var(--adm-border-md)', border: '1px solid' }} />
+          ) : (
+            <input dir="ltr" lang="en" value={en} onChange={(e) => set({ [keyEn]: e.target.value } as Partial<ArticleRow>)} className="h-10 rounded-lg px-3 text-sm" style={{ background: 'var(--adm-input-bg)', borderColor: 'var(--adm-border-md)', border: '1px solid' }} />
+          )}
+        </div>
+      )}
     </div>
   );
 
@@ -151,7 +162,14 @@ function ArticleEditor({
       >
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{row.id ? 'Edit article' : 'New article'}</h2>
-          <button onClick={onCancel} className="text-2xl" style={{ color: 'var(--adm-text-sm)' }}>✕</button>
+          <div className="flex items-center gap-4">
+            {row.id && (
+              <button onClick={() => setShowHistory(true)} className="text-sm" style={{ color: 'var(--adm-text-sm)' }}>
+                History
+              </button>
+            )}
+            <button onClick={onCancel} className="text-2xl" style={{ color: 'var(--adm-text-sm)' }}>✕</button>
+          </div>
         </div>
 
         <div className="space-y-5">
@@ -163,7 +181,7 @@ function ArticleEditor({
           <Pair label="Category" ar={draft.category_ar} en={draft.category_en} keyAr="category_ar" keyEn="category_en" />
           <Pair label="Title" ar={draft.title_ar} en={draft.title_en} keyAr="title_ar" keyEn="title_en" />
           <Pair label="Excerpt" ar={draft.excerpt_ar} en={draft.excerpt_en} keyAr="excerpt_ar" keyEn="excerpt_en" long />
-          <Pair label="Body" ar={draft.body_ar} en={draft.body_en} keyAr="body_ar" keyEn="body_en" long />
+          <Pair label="Body" ar={draft.body_ar} en={draft.body_en} keyAr="body_ar" keyEn="body_en" rich />
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
@@ -183,9 +201,49 @@ function ArticleEditor({
             <ImageInput value={draft.image_url ?? ''} onChange={(v) => set({ image_url: v || null })} />
           </div>
 
+          <div className="space-y-4 rounded-xl border p-4" style={{ borderColor: 'var(--adm-border)' }}>
+            <div className="text-sm font-medium" style={{ color: 'var(--adm-text-md)' }}>SEO (optional)</div>
+            <Pair
+              label="Meta description"
+              ar={draft.meta_description_ar} en={draft.meta_description_en}
+              keyAr="meta_description_ar" keyEn="meta_description_en" long
+            />
+            <div className="space-y-2">
+              <div className="text-sm font-medium" style={{ color: 'var(--adm-text-md)' }}>OG image (overrides article image)</div>
+              <ImageInput value={draft.og_image_url ?? ''} onChange={(v) => set({ og_image_url: v || null })} />
+            </div>
+            <div className="space-y-1.5">
+              <div className="text-sm font-medium" style={{ color: 'var(--adm-text-md)' }}>Canonical URL (overrides default)</div>
+              <input
+                value={draft.canonical_url ?? ''}
+                onChange={(e) => set({ canonical_url: e.target.value || null })}
+                placeholder="https://…"
+                className="h-10 w-full rounded-lg px-3 text-sm"
+                style={{ background: 'var(--adm-input-bg)', borderColor: 'var(--adm-border-md)', border: '1px solid' }}
+              />
+            </div>
+          </div>
+
         </div>
 
-        <SaveBar published={draft.published} onCancel={onCancel} onSave={(pub) => onSave({ ...draft, published: pub })} />
+        <SaveBar
+          published={draft.published}
+          onCancel={onCancel}
+          onSave={(pub) => onSave({ ...draft, published: pub })}
+          onPreview={
+            draft.slug
+              ? () => window.open(`/en/insights/articles/${draft.slug}?preview=1`, '_blank', 'noopener')
+              : undefined
+          }
+        />
+
+        {showHistory && (
+          <VersionHistory
+            fetchVersions={() => getArticleVersions(row.id!)}
+            onRestore={(snapshot) => setDraft((d) => ({ ...d, ...(snapshot as Partial<ArticleRow>), id: d.id }))}
+            onClose={() => setShowHistory(false)}
+          />
+        )}
       </div>
     </div>
   );

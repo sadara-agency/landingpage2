@@ -4,7 +4,10 @@ import { serviceClient, supabaseConfigured } from '@/lib/supabase/service';
 import { articles as fallback, type Article } from '@/content/insights';
 import { images } from '@/content/images';
 
-export type ArticleWithImage = Article & { slug: string; image: string; body?: { ar: string; en: string } };
+export type ArticleWithImage = Article & {
+  slug: string; image: string; body?: { ar: string; en: string };
+  metaDescription?: { ar: string; en: string }; ogImage?: string | null; canonicalUrl?: string | null;
+};
 
 type Row = {
   slug: string;
@@ -16,6 +19,8 @@ type Row = {
   type: Article['type'];
   image_url: string | null;
   sort: number;
+  meta_description_ar?: string; meta_description_en?: string;
+  og_image_url?: string | null; canonical_url?: string | null;
 };
 
 function fromRow(r: Row, i: number): ArticleWithImage {
@@ -28,6 +33,9 @@ function fromRow(r: Row, i: number): ArticleWithImage {
     date: r.date,
     type: r.type,
     image: r.image_url || images.articles[i % images.articles.length],
+    metaDescription: { ar: r.meta_description_ar ?? '', en: r.meta_description_en ?? '' },
+    ogImage: r.og_image_url ?? null,
+    canonicalUrl: r.canonical_url ?? null,
   };
 }
 
@@ -38,21 +46,19 @@ const fallbackList = (): ArticleWithImage[] =>
     image: images.articles[i % images.articles.length],
   }));
 
-export async function getArticleBySlug(slug: string): Promise<ArticleWithImage | null> {
-  const all = await listArticles();
+export async function getArticleBySlug(slug: string, preview = false): Promise<ArticleWithImage | null> {
+  const all = await listArticles(preview);
   return all.find((a) => a.slug === slug) ?? null;
 }
 
-export const listArticles = cache(async (): Promise<ArticleWithImage[]> => {
+// preview=true also returns unpublished drafts (callers must verify the request is from an admin before passing it).
+export const listArticles = cache(async (preview = false): Promise<ArticleWithImage[]> => {
   if (!supabaseConfigured()) return fallbackList();
   try {
     const db = serviceClient();
-    const { data, error } = await db
-      .from('articles')
-      .select('*')
-      .eq('published', true)
-      .is('archived_at', null)
-      .order('sort', { ascending: true });
+    let q = db.from('articles').select('*').is('archived_at', null);
+    if (!preview) q = q.eq('published', true);
+    const { data, error } = await q.order('sort', { ascending: true });
     if (error || !data?.length) return fallbackList();
     return (data as Row[]).map(fromRow);
   } catch {

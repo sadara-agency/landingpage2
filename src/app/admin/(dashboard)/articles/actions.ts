@@ -4,6 +4,9 @@ import { revalidatePath } from 'next/cache';
 import { serviceClient } from '@/lib/supabase/service';
 import { getSessionUser } from '@/lib/supabase/server';
 import { requireFields, validateSlug, checkDuplicateSlug } from '@/lib/admin/validate';
+import { sanitizeHtml } from '@/lib/sanitize';
+import { snapshotVersion, listVersions } from '@/lib/admin/versions';
+import { logAction } from '@/lib/admin/audit';
 
 export type ArticleRow = {
   id?: string;
@@ -17,6 +20,9 @@ export type ArticleRow = {
   image_url: string | null;
   sort: number;
   published: boolean;
+  meta_description_ar: string; meta_description_en: string;
+  og_image_url: string | null;
+  canonical_url: string | null;
 };
 
 async function guard() {
@@ -38,7 +44,7 @@ export async function listAllArticles() {
 }
 
 export async function saveArticle(row: ArticleRow) {
-  await guard();
+  const user = await guard();
   const db = serviceClient();
 
   const bad =
@@ -53,20 +59,44 @@ export async function saveArticle(row: ArticleRow) {
   const dup = checkDuplicateSlug(row.slug, existing ?? [], row.id);
   if (dup) return { ok: false as const, error: dup.error };
 
-  const payload = { ...row, slug: row.slug.trim(), updated_at: new Date().toISOString() };
-  const res = row.id
-    ? await db.from('articles').update(payload).eq('id', row.id)
-    : await db.from('articles').insert(payload);
-  if (res.error) return { ok: false as const, error: { ar: res.error.message, en: res.error.message } };
+  if (row.id) {
+    const { data: current } = await db.from('articles').select('*').eq('id', row.id).single();
+    if (current) await snapshotVersion('article', row.id, current, user.id);
+  }
+
+  const payload = {
+    ...row,
+    slug: row.slug.trim(),
+    body_ar: sanitizeHtml(row.body_ar),
+    body_en: sanitizeHtml(row.body_en),
+    updated_by: user.id,
+    updated_at: new Date().toISOString(),
+  };
+  if (row.id) {
+    const res = await db.from('articles').update(payload).eq('id', row.id);
+    if (res.error) return { ok: false as const, error: { ar: res.error.message, en: res.error.message } };
+    await logAction(user.id, 'update', 'article', row.id, row.title_en || row.slug);
+  } else {
+    const { data: created, error } = await db.from('articles').insert(payload).select('id').single();
+    if (error) return { ok: false as const, error: { ar: error.message, en: error.message } };
+    await logAction(user.id, 'create', 'article', created.id, row.title_en || row.slug);
+  }
   refresh();
   return { ok: true as const };
 }
 
-export async function deleteArticle(id: string) {
+export async function getArticleVersions(id: string) {
   await guard();
+  return listVersions('article', id);
+}
+
+export async function deleteArticle(id: string) {
+  const user = await guard();
   const db = serviceClient();
+  const { data: current } = await db.from('articles').select('title_en, slug').eq('id', id).single();
   const { error } = await db.from('articles').update({ archived_at: new Date().toISOString() }).eq('id', id);
   if (error) return { ok: false as const, error: error.message };
+  await logAction(user.id, 'delete', 'article', id, current?.title_en || current?.slug);
   refresh();
   return { ok: true as const };
 }

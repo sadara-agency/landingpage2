@@ -5,6 +5,8 @@ import { serviceClient } from '@/lib/supabase/service';
 import { getSessionUser } from '@/lib/supabase/server';
 import type { BlockData } from '@/lib/blocks/schemas';
 import { requireFields, validateSlug, checkDuplicateSlug } from '@/lib/admin/validate';
+import { snapshotVersion, listVersions } from '@/lib/admin/versions';
+import { logAction } from '@/lib/admin/audit';
 
 export type PageRow = {
   id?: string;
@@ -14,6 +16,8 @@ export type PageRow = {
   blocks: BlockData[];
   published: boolean;
   sort: number;
+  og_image_url: string | null;
+  canonical_url: string | null;
 };
 
 async function guard() {
@@ -35,7 +39,7 @@ export async function listAllPages() {
 }
 
 export async function savePage(row: PageRow) {
-  await guard();
+  const user = await guard();
   const db = serviceClient();
 
   const bad =
@@ -50,20 +54,37 @@ export async function savePage(row: PageRow) {
   const dup = checkDuplicateSlug(row.slug, existing ?? [], row.id);
   if (dup) return { ok: false as const, error: dup.error };
 
-  const payload = { ...row, slug: row.slug.trim(), updated_at: new Date().toISOString() };
-  const res = row.id
-    ? await db.from('pages').update(payload).eq('id', row.id)
-    : await db.from('pages').insert(payload);
-  if (res.error) return { ok: false as const, error: { ar: res.error.message, en: res.error.message } };
+  if (row.id) {
+    const { data: current } = await db.from('pages').select('*').eq('id', row.id).single();
+    if (current) await snapshotVersion('page', row.id, current, user.id);
+  }
+
+  const payload = { ...row, slug: row.slug.trim(), updated_by: user.id, updated_at: new Date().toISOString() };
+  if (row.id) {
+    const res = await db.from('pages').update(payload).eq('id', row.id);
+    if (res.error) return { ok: false as const, error: { ar: res.error.message, en: res.error.message } };
+    await logAction(user.id, 'update', 'page', row.id, row.title_en || row.slug);
+  } else {
+    const { data: created, error } = await db.from('pages').insert(payload).select('id').single();
+    if (error) return { ok: false as const, error: { ar: error.message, en: error.message } };
+    await logAction(user.id, 'create', 'page', created.id, row.title_en || row.slug);
+  }
   refresh();
   return { ok: true as const };
 }
 
-export async function deletePage(id: string) {
+export async function getPageVersions(id: string) {
   await guard();
+  return listVersions('page', id);
+}
+
+export async function deletePage(id: string) {
+  const user = await guard();
   const db = serviceClient();
+  const { data: current } = await db.from('pages').select('title_en, slug').eq('id', id).single();
   const { error } = await db.from('pages').update({ archived_at: new Date().toISOString() }).eq('id', id);
   if (error) return { ok: false as const, error: error.message };
+  await logAction(user.id, 'delete', 'page', id, current?.title_en || current?.slug);
   refresh();
   return { ok: true as const };
 }

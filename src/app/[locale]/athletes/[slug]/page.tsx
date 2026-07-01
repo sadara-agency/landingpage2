@@ -9,6 +9,7 @@ import { CountUp } from '@/components/motion/CountUp';
 import { Reveal, RevealGroup, RevealItem } from '@/components/motion/Reveal';
 import { Tag } from '@/components/ui/Tag';
 import { AthleteJsonLd } from '@/components/layout/JsonLd';
+import { previewAllowed } from '@/lib/admin/preview';
 
 const SITE = 'https://www.sadarasport.sa';
 
@@ -19,18 +20,22 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string; slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }): Promise<Metadata> {
   const { locale, slug } = await params;
   const tr = pick(isLocale(locale) ? locale : 'en');
-  const a = await getAthlete(slug);
+  const a = await getAthlete(slug, await previewAllowed(await searchParams));
   if (!a) return { title: 'Athlete' };
-  const canonicalUrl = `${SITE}/${locale}/athletes/${slug}`;
+  const canonicalUrl = a.canonicalUrl || `${SITE}/${locale}/athletes/${slug}`;
+  const description = (a.metaDescription && tr(a.metaDescription)) || tr(a.bio);
+  const ogImage = a.ogImage || a.photoUrl;
   const altLocale = locale === 'ar' ? 'en' : 'ar';
   return {
     title: tr(a.name),
-    description: tr(a.bio),
+    description,
     alternates: {
       canonical: canonicalUrl,
       languages: {
@@ -41,34 +46,42 @@ export async function generateMetadata({
     },
     openGraph: {
       title: tr(a.name),
-      description: tr(a.bio),
+      description,
       url: canonicalUrl,
       type: 'profile',
-      ...(a.photoUrl ? { images: [{ url: a.photoUrl, width: 1200, height: 630, alt: tr(a.name) }] } : {}),
+      ...(ogImage ? { images: [{ url: ogImage, width: 1200, height: 630, alt: tr(a.name) }] } : {}),
     },
     twitter: {
       card: 'summary_large_image',
       title: tr(a.name),
-      description: tr(a.bio),
-      ...(a.photoUrl ? { images: [a.photoUrl] } : {}),
+      description,
+      ...(ogImage ? { images: [ogImage] } : {}),
     },
   };
 }
 
 export default async function AthleteProfilePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string; slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { locale, slug } = await params;
   if (!isLocale(locale)) notFound();
   const loc = locale as Locale;
   const tr = pick(loc);
-  const a = await getAthlete(slug);
+  const preview = await previewAllowed(await searchParams);
+  const a = await getAthlete(slug, preview);
   if (!a) notFound();
 
   return (
     <>
+      {preview && (
+        <div className="bg-[#FF9F0A] px-4 py-1.5 text-center text-sm font-medium text-black">
+          Preview — not yet published · معاينة — غير منشورة
+        </div>
+      )}
       <AthleteJsonLd
         name={tr(a.name)}
         description={tr(a.bio)}
