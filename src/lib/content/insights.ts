@@ -38,21 +38,19 @@ const fallbackList = (): ArticleWithImage[] =>
     image: images.articles[i % images.articles.length],
   }));
 
-export async function getArticleBySlug(slug: string): Promise<ArticleWithImage | null> {
-  const all = await listArticles();
+export async function getArticleBySlug(slug: string, preview = false): Promise<ArticleWithImage | null> {
+  const all = await listArticles(preview);
   return all.find((a) => a.slug === slug) ?? null;
 }
 
-export const listArticles = cache(async (): Promise<ArticleWithImage[]> => {
+// preview=true also returns unpublished drafts (callers must verify the request is from an admin before passing it).
+export const listArticles = cache(async (preview = false): Promise<ArticleWithImage[]> => {
   if (!supabaseConfigured()) return fallbackList();
   try {
     const db = serviceClient();
-    const { data, error } = await db
-      .from('articles')
-      .select('*')
-      .eq('published', true)
-      .is('archived_at', null)
-      .order('sort', { ascending: true });
+    let q = db.from('articles').select('*').is('archived_at', null);
+    if (!preview) q = q.eq('published', true);
+    const { data, error } = await q.order('sort', { ascending: true });
     if (error || !data?.length) return fallbackList();
     return (data as Row[]).map(fromRow);
   } catch {

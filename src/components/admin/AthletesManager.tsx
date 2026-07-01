@@ -201,7 +201,16 @@ function AthleteEditor({
           <AutoField value={draft.stats} path={['stats']} label="Stats" onChange={onStatsChange} />
         </div>
 
-        <SaveBar published={draft.published} onCancel={onCancel} onSave={(pub) => onSave({ ...draft, published: pub })} />
+        <SaveBar
+          published={draft.published}
+          onCancel={onCancel}
+          onSave={(pub) => onSave({ ...draft, published: pub })}
+          onPreview={
+            draft.slug
+              ? () => window.open(`/en/athletes/${draft.slug}?preview=1`, '_blank', 'noopener')
+              : undefined
+          }
+        />
       </div>
     </div>
   );

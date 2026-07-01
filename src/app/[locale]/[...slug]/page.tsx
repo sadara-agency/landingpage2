@@ -3,15 +3,7 @@ import type { Metadata } from 'next';
 import { isLocale, type Locale, pick } from '@/lib/i18n';
 import { getPublishedPage } from '@/lib/content/pages';
 import { renderBlock } from '@/lib/blocks/registry';
-import { getSessionUser } from '@/lib/supabase/server';
-
-// True only when ?preview=1 AND the request is from a signed-in admin — a
-// guessed flag alone can never surface unpublished drafts.
-async function previewAllowed(sp: Record<string, string | string[] | undefined>): Promise<boolean> {
-  if (sp.preview !== '1') return false;
-  const { isAdmin } = await getSessionUser();
-  return isAdmin;
-}
+import { previewAllowed } from '@/lib/admin/preview';
 
 // Catch-all for builder-authored pages. Rendered dynamically (SSR) per request:
 // pages are created/edited at runtime in the CMS, and the shared root layout uses

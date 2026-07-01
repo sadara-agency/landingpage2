@@ -45,16 +45,14 @@ const withPhoto = (a: Athlete): Athlete & { photoUrl: string } => ({
   photoUrl: images.athletes[a.slug] ?? images.athleteDefault,
 });
 
-export const listAthletes = cache(async (): Promise<(Athlete & { photoUrl: string })[]> => {
+// preview=true also returns unpublished drafts (callers must verify the request is from an admin before passing it).
+export const listAthletes = cache(async (preview = false): Promise<(Athlete & { photoUrl: string })[]> => {
   if (!supabaseConfigured()) return fallback.map(withPhoto);
   try {
     const db = serviceClient();
-    const { data, error } = await db
-      .from('athletes')
-      .select('*')
-      .eq('published', true)
-      .is('archived_at', null)
-      .order('sort', { ascending: true });
+    let q = db.from('athletes').select('*').is('archived_at', null);
+    if (!preview) q = q.eq('published', true);
+    const { data, error } = await q.order('sort', { ascending: true });
     if (error || !data?.length) return fallback.map(withPhoto);
     return (data as Row[]).map(fromRow);
   } catch {
@@ -62,7 +60,7 @@ export const listAthletes = cache(async (): Promise<(Athlete & { photoUrl: strin
   }
 });
 
-export const getAthlete = cache(async (slug: string) => {
-  const all = await listAthletes();
+export const getAthlete = cache(async (slug: string, preview = false) => {
+  const all = await listAthletes(preview);
   return all.find((a) => a.slug === slug) ?? null;
 });

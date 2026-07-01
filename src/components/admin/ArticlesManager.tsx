@@ -193,7 +193,16 @@ function ArticleEditor({
 
         </div>
 
-        <SaveBar published={draft.published} onCancel={onCancel} onSave={(pub) => onSave({ ...draft, published: pub })} />
+        <SaveBar
+          published={draft.published}
+          onCancel={onCancel}
+          onSave={(pub) => onSave({ ...draft, published: pub })}
+          onPreview={
+            draft.slug
+              ? () => window.open(`/en/insights/articles/${draft.slug}?preview=1`, '_blank', 'noopener')
+              : undefined
+          }
+        />
       </div>
     </div>
   );
