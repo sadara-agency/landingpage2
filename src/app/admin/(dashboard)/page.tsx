@@ -9,6 +9,7 @@ const CARDS = [
   { href: '/admin/articles', title: 'Articles & News', desc: 'Insights feed items.' },
   { href: '/admin/roles', title: 'Open Roles', desc: 'Careers listings.' },
   { href: '/admin/docs/images', title: 'Images', desc: 'Hero & section imagery.' },
+  { href: '/admin/media', title: 'Media Library', desc: 'Browse, reuse, and delete uploaded images.' },
   { href: '/admin/inbox', title: 'Contact Inbox', desc: 'Form submissions.' },
 ];
 
