@@ -17,6 +17,7 @@ export function PageBuilder({
   const [draft, setDraft] = useState<PageRow>(row);
   const [addOpen, setAddOpen] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
   const set = (patch: Partial<PageRow>) => setDraft((d) => ({ ...d, ...patch }));
 
   const setBlocks = (blocks: BlockData[]) => set({ blocks });
@@ -33,6 +34,14 @@ export function PageBuilder({
     if (j < 0 || j >= draft.blocks.length) return;
     const next = [...draft.blocks];
     [next[i], next[j]] = [next[j], next[i]];
+    setBlocks(next);
+  };
+
+  const reorderBlock = (from: number, to: number) => {
+    if (from === to) return;
+    const next = [...draft.blocks];
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
     setBlocks(next);
   };
 
@@ -147,11 +156,25 @@ export function PageBuilder({
             {draft.blocks.map((block, i) => (
               <div
                 key={i}
+                draggable
+                onDragStart={() => setDragIndex(i)}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  if (dragIndex !== null) reorderBlock(dragIndex, i);
+                  setDragIndex(null);
+                }}
+                onDragEnd={() => setDragIndex(null)}
                 className="rounded-xl p-4"
-                style={{ border: '1px solid var(--adm-border)', background: 'var(--adm-input-bg)' }}
+                style={{
+                  border: '1px solid var(--adm-border)',
+                  background: 'var(--adm-input-bg)',
+                  opacity: dragIndex === i ? 0.5 : 1,
+                }}
               >
                 <div className="mb-3 flex items-center justify-between">
                   <span className="text-sm font-semibold" style={{ color: 'var(--adm-text-md)' }}>
+                    <span className="cursor-grab select-none" style={{ color: 'var(--adm-text-xs)' }} title="Drag to reorder">⠿</span>{' '}
                     <span className="font-mono text-[11px]" style={{ color: 'var(--adm-text-xs)' }}>#{i + 1}</span>{' '}
                     {BLOCK_LABELS[block.type]}
                   </span>
