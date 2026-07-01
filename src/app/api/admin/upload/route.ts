@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { serviceClient } from '@/lib/supabase/service';
 import { getSessionUser } from '@/lib/supabase/server';
+import { logAction } from '@/lib/admin/audit';
 
 // Admin-only image upload → Supabase Storage 'site-media' → returns public URL.
 export async function POST(req: Request) {
@@ -23,12 +24,14 @@ export async function POST(req: Request) {
   if (upErr) return NextResponse.json({ error: upErr.message }, { status: 500 });
 
   const { data } = db.storage.from('site-media').getPublicUrl(path);
-  await db.from('media').insert({
+  const { data: created } = await db.from('media').insert({
     bucket_path: path,
     public_url: data.publicUrl,
     label: file.name,
     uploaded_by: user.id,
-  });
+  }).select('id').single();
+
+  if (created) await logAction(user.id, 'create', 'media', created.id, file.name);
 
   return NextResponse.json({ url: data.publicUrl });
 }

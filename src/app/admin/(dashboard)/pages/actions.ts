@@ -6,6 +6,7 @@ import { getSessionUser } from '@/lib/supabase/server';
 import type { BlockData } from '@/lib/blocks/schemas';
 import { requireFields, validateSlug, checkDuplicateSlug } from '@/lib/admin/validate';
 import { snapshotVersion, listVersions } from '@/lib/admin/versions';
+import { logAction } from '@/lib/admin/audit';
 
 export type PageRow = {
   id?: string;
@@ -59,10 +60,15 @@ export async function savePage(row: PageRow) {
   }
 
   const payload = { ...row, slug: row.slug.trim(), updated_by: user.id, updated_at: new Date().toISOString() };
-  const res = row.id
-    ? await db.from('pages').update(payload).eq('id', row.id)
-    : await db.from('pages').insert(payload);
-  if (res.error) return { ok: false as const, error: { ar: res.error.message, en: res.error.message } };
+  if (row.id) {
+    const res = await db.from('pages').update(payload).eq('id', row.id);
+    if (res.error) return { ok: false as const, error: { ar: res.error.message, en: res.error.message } };
+    await logAction(user.id, 'update', 'page', row.id, row.title_en || row.slug);
+  } else {
+    const { data: created, error } = await db.from('pages').insert(payload).select('id').single();
+    if (error) return { ok: false as const, error: { ar: error.message, en: error.message } };
+    await logAction(user.id, 'create', 'page', created.id, row.title_en || row.slug);
+  }
   refresh();
   return { ok: true as const };
 }
@@ -73,10 +79,12 @@ export async function getPageVersions(id: string) {
 }
 
 export async function deletePage(id: string) {
-  await guard();
+  const user = await guard();
   const db = serviceClient();
+  const { data: current } = await db.from('pages').select('title_en, slug').eq('id', id).single();
   const { error } = await db.from('pages').update({ archived_at: new Date().toISOString() }).eq('id', id);
   if (error) return { ok: false as const, error: error.message };
+  await logAction(user.id, 'delete', 'page', id, current?.title_en || current?.slug);
   refresh();
   return { ok: true as const };
 }

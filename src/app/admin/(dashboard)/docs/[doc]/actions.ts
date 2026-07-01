@@ -5,6 +5,7 @@ import { serviceClient } from '@/lib/supabase/service';
 import { getSessionUser } from '@/lib/supabase/server';
 import { sanitizeLongTextTree } from '@/lib/sanitize';
 import { snapshotVersion, listVersions } from '@/lib/admin/versions';
+import { logAction } from '@/lib/admin/audit';
 
 const isRichTextKey = (key: string | number) => String(key).toLowerCase().includes('body');
 
@@ -23,6 +24,8 @@ export async function saveDoc(key: string, data: Record<string, unknown>) {
     .from('content_docs')
     .upsert({ key, data: clean, updated_by: user.id, updated_at: new Date().toISOString() }, { onConflict: 'key' });
   if (error) return { ok: false, error: error.message };
+
+  await logAction(user.id, current ? 'update' : 'create', 'doc', key, key);
 
   // Refresh the whole localized tree (every page may read this doc, e.g. nav/images).
   revalidatePath('/[locale]', 'layout');

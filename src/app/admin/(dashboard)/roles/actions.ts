@@ -5,6 +5,7 @@ import { serviceClient } from '@/lib/supabase/service';
 import { getSessionUser } from '@/lib/supabase/server';
 import { requireFields } from '@/lib/admin/validate';
 import { snapshotVersion, listVersions } from '@/lib/admin/versions';
+import { logAction } from '@/lib/admin/audit';
 
 export type RoleRow = {
   id?: string;
@@ -50,10 +51,15 @@ export async function saveRole(row: RoleRow) {
   }
 
   const payload = { ...row, updated_by: user.id, updated_at: new Date().toISOString() };
-  const res = row.id
-    ? await db.from('roles').update(payload).eq('id', row.id)
-    : await db.from('roles').insert(payload);
-  if (res.error) return { ok: false as const, error: { ar: res.error.message, en: res.error.message } };
+  if (row.id) {
+    const res = await db.from('roles').update(payload).eq('id', row.id);
+    if (res.error) return { ok: false as const, error: { ar: res.error.message, en: res.error.message } };
+    await logAction(user.id, 'update', 'role', row.id, row.title_en);
+  } else {
+    const { data: created, error } = await db.from('roles').insert(payload).select('id').single();
+    if (error) return { ok: false as const, error: { ar: error.message, en: error.message } };
+    await logAction(user.id, 'create', 'role', created.id, row.title_en);
+  }
   refresh();
   return { ok: true as const };
 }
@@ -64,10 +70,12 @@ export async function getRoleVersions(id: string) {
 }
 
 export async function deleteRole(id: string) {
-  await guard();
+  const user = await guard();
   const db = serviceClient();
+  const { data: current } = await db.from('roles').select('title_en').eq('id', id).single();
   const { error } = await db.from('roles').update({ archived_at: new Date().toISOString() }).eq('id', id);
   if (error) return { ok: false as const, error: error.message };
+  await logAction(user.id, 'delete', 'role', id, current?.title_en);
   refresh();
   return { ok: true as const };
 }

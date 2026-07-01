@@ -5,6 +5,7 @@ import { serviceClient } from '@/lib/supabase/service';
 import { getSessionUser } from '@/lib/supabase/server';
 import { requireFields, validateSlug, checkDuplicateSlug } from '@/lib/admin/validate';
 import { snapshotVersion, listVersions } from '@/lib/admin/versions';
+import { logAction } from '@/lib/admin/audit';
 
 export type AthleteRow = {
   id?: string;
@@ -68,10 +69,15 @@ export async function saveAthlete(row: AthleteRow) {
   }
 
   const payload = { ...row, slug: row.slug.trim(), updated_by: user.id, updated_at: new Date().toISOString() };
-  const res = row.id
-    ? await db.from('athletes').update(payload).eq('id', row.id)
-    : await db.from('athletes').insert(payload);
-  if (res.error) return { ok: false as const, error: { ar: res.error.message, en: res.error.message } };
+  if (row.id) {
+    const res = await db.from('athletes').update(payload).eq('id', row.id);
+    if (res.error) return { ok: false as const, error: { ar: res.error.message, en: res.error.message } };
+    await logAction(user.id, 'update', 'athlete', row.id, row.name_en || row.slug);
+  } else {
+    const { data: created, error } = await db.from('athletes').insert(payload).select('id').single();
+    if (error) return { ok: false as const, error: { ar: error.message, en: error.message } };
+    await logAction(user.id, 'create', 'athlete', created.id, row.name_en || row.slug);
+  }
   refresh();
   return { ok: true as const };
 }
@@ -82,11 +88,13 @@ export async function getAthleteVersions(id: string) {
 }
 
 export async function deleteAthlete(id: string) {
-  await guard();
+  const user = await guard();
   const db = serviceClient();
+  const { data: current } = await db.from('athletes').select('name_en, slug').eq('id', id).single();
   // Soft delete: hidden everywhere but recoverable by clearing archived_at.
   const { error } = await db.from('athletes').update({ archived_at: new Date().toISOString() }).eq('id', id);
   if (error) return { ok: false as const, error: error.message };
+  await logAction(user.id, 'delete', 'athlete', id, current?.name_en || current?.slug);
   refresh();
   return { ok: true as const };
 }

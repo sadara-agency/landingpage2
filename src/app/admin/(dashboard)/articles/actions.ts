@@ -6,6 +6,7 @@ import { getSessionUser } from '@/lib/supabase/server';
 import { requireFields, validateSlug, checkDuplicateSlug } from '@/lib/admin/validate';
 import { sanitizeHtml } from '@/lib/sanitize';
 import { snapshotVersion, listVersions } from '@/lib/admin/versions';
+import { logAction } from '@/lib/admin/audit';
 
 export type ArticleRow = {
   id?: string;
@@ -71,10 +72,15 @@ export async function saveArticle(row: ArticleRow) {
     updated_by: user.id,
     updated_at: new Date().toISOString(),
   };
-  const res = row.id
-    ? await db.from('articles').update(payload).eq('id', row.id)
-    : await db.from('articles').insert(payload);
-  if (res.error) return { ok: false as const, error: { ar: res.error.message, en: res.error.message } };
+  if (row.id) {
+    const res = await db.from('articles').update(payload).eq('id', row.id);
+    if (res.error) return { ok: false as const, error: { ar: res.error.message, en: res.error.message } };
+    await logAction(user.id, 'update', 'article', row.id, row.title_en || row.slug);
+  } else {
+    const { data: created, error } = await db.from('articles').insert(payload).select('id').single();
+    if (error) return { ok: false as const, error: { ar: error.message, en: error.message } };
+    await logAction(user.id, 'create', 'article', created.id, row.title_en || row.slug);
+  }
   refresh();
   return { ok: true as const };
 }
@@ -85,10 +91,12 @@ export async function getArticleVersions(id: string) {
 }
 
 export async function deleteArticle(id: string) {
-  await guard();
+  const user = await guard();
   const db = serviceClient();
+  const { data: current } = await db.from('articles').select('title_en, slug').eq('id', id).single();
   const { error } = await db.from('articles').update({ archived_at: new Date().toISOString() }).eq('id', id);
   if (error) return { ok: false as const, error: error.message };
+  await logAction(user.id, 'delete', 'article', id, current?.title_en || current?.slug);
   refresh();
   return { ok: true as const };
 }

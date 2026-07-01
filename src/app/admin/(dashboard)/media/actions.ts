@@ -2,6 +2,7 @@
 
 import { serviceClient } from '@/lib/supabase/service';
 import { getSessionUser } from '@/lib/supabase/server';
+import { logAction } from '@/lib/admin/audit';
 
 export type MediaRow = {
   id: string;
@@ -26,12 +27,14 @@ export async function listMedia() {
 }
 
 export async function deleteMedia(id: string, bucketPath: string) {
-  await guard();
+  const user = await guard();
   const db = serviceClient();
+  const { data: current } = await db.from('media').select('label').eq('id', id).single();
   // Best-effort: the DB row is the source of truth for the UI list, so a missing/already-gone
   // storage object shouldn't block removing the row.
   await db.storage.from('site-media').remove([bucketPath]);
   const { error } = await db.from('media').delete().eq('id', id);
   if (error) return { ok: false as const, error: error.message };
+  await logAction(user.id, 'delete', 'media', id, current?.label);
   return { ok: true as const };
 }
