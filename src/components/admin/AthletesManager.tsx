@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import {
-  saveAthlete, deleteAthlete, reorderAthletes, type AthleteRow,
+  saveAthlete, deleteAthlete, reorderAthletes, getAthleteVersions, type AthleteRow,
 } from '@/app/admin/(dashboard)/athletes/actions';
 import { AutoField } from './AutoField';
 import { ImageInput } from './ImageInput';
+import { VersionHistory } from './VersionHistory';
 import { setAt, type Path } from '@/lib/admin/jsonPath';
 import { errText, SAVED_MSG } from '@/lib/admin/validate';
 import { SaveBar } from './SaveBar';
@@ -130,6 +131,7 @@ function AthleteEditor({
   row, onCancel, onSave,
 }: { row: AthleteRow; onCancel: () => void; onSave: (r: AthleteRow) => void }) {
   const [draft, setDraft] = useState<AthleteRow>(row);
+  const [showHistory, setShowHistory] = useState(false);
   const set = (patch: Partial<AthleteRow>) => setDraft((d) => ({ ...d, ...patch }));
 
   // stats uses the AutoField array editor via a path on a tiny wrapper object.
@@ -167,7 +169,14 @@ function AthleteEditor({
       >
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{row.id ? 'Edit athlete' : 'New athlete'}</h2>
-          <button onClick={onCancel} className="text-2xl" style={{ color: 'var(--adm-text-sm)' }}>✕</button>
+          <div className="flex items-center gap-4">
+            {row.id && (
+              <button onClick={() => setShowHistory(true)} className="text-sm" style={{ color: 'var(--adm-text-sm)' }}>
+                History
+              </button>
+            )}
+            <button onClick={onCancel} className="text-2xl" style={{ color: 'var(--adm-text-sm)' }}>✕</button>
+          </div>
         </div>
 
         <div className="space-y-5">
@@ -235,6 +244,14 @@ function AthleteEditor({
               : undefined
           }
         />
+
+        {showHistory && (
+          <VersionHistory
+            fetchVersions={() => getAthleteVersions(row.id!)}
+            onRestore={(snapshot) => setDraft((d) => ({ ...d, ...(snapshot as Partial<AthleteRow>), id: d.id }))}
+            onClose={() => setShowHistory(false)}
+          />
+        )}
       </div>
     </div>
   );

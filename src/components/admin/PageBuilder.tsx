@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import type { PageRow } from '@/app/admin/(dashboard)/pages/actions';
+import { getPageVersions, type PageRow } from '@/app/admin/(dashboard)/pages/actions';
 import { AutoField } from './AutoField';
 import { ImageInput } from './ImageInput';
+import { VersionHistory } from './VersionHistory';
 import { setAt, type Path } from '@/lib/admin/jsonPath';
 import { BLOCK_TYPES, BLOCK_LABELS, BLOCK_DEFAULTS, type BlockData, type BlockType } from '@/lib/blocks/schemas';
 import { SaveBar } from './SaveBar';
@@ -15,6 +16,7 @@ export function PageBuilder({
 }: { row: PageRow; onCancel: () => void; onSave: (r: PageRow) => void }) {
   const [draft, setDraft] = useState<PageRow>(row);
   const [addOpen, setAddOpen] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const set = (patch: Partial<PageRow>) => setDraft((d) => ({ ...d, ...patch }));
 
   const setBlocks = (blocks: BlockData[]) => set({ blocks });
@@ -53,7 +55,14 @@ export function PageBuilder({
       >
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{row.id ? 'Edit page' : 'New page'}</h2>
-          <button onClick={onCancel} className="text-2xl" style={{ color: 'var(--adm-text-sm)' }}>✕</button>
+          <div className="flex items-center gap-4">
+            {row.id && (
+              <button onClick={() => setShowHistory(true)} className="text-sm" style={{ color: 'var(--adm-text-sm)' }}>
+                History
+              </button>
+            )}
+            <button onClick={onCancel} className="text-2xl" style={{ color: 'var(--adm-text-sm)' }}>✕</button>
+          </div>
         </div>
 
         <div className="space-y-5">
@@ -168,6 +177,14 @@ export function PageBuilder({
               : undefined
           }
         />
+
+        {showHistory && (
+          <VersionHistory
+            fetchVersions={() => getPageVersions(row.id!)}
+            onRestore={(snapshot) => setDraft((d) => ({ ...d, ...(snapshot as Partial<PageRow>), id: d.id }))}
+            onClose={() => setShowHistory(false)}
+          />
+        )}
       </div>
     </div>
   );

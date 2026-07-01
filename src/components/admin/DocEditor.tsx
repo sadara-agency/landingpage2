@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { AutoField } from './AutoField';
+import { VersionHistory } from './VersionHistory';
 import { setAt, type Path } from '@/lib/admin/jsonPath';
-import { saveDoc } from '@/app/admin/(dashboard)/docs/[doc]/actions';
+import { saveDoc, getDocVersions } from '@/app/admin/(dashboard)/docs/[doc]/actions';
 import { fieldLabel } from '@/lib/admin/fieldMeta';
 import { SAVED_MSG } from '@/lib/admin/validate';
 
@@ -20,6 +21,7 @@ export function DocEditor({
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
 
   const onChange = (path: Path, value: unknown) => {
     setData((d) => setAt(d, path, value));
@@ -50,15 +52,28 @@ export function DocEditor({
           <h1 className="text-xl font-semibold">{title}</h1>
           {msg && <p className="mt-0.5 text-xs" style={{ color: 'var(--adm-text-sm)' }}>{msg}</p>}
         </div>
-        <button
-          onClick={save}
-          disabled={!dirty || saving}
-          className="rounded-lg px-5 py-2 text-sm font-medium text-white transition-opacity disabled:opacity-40"
-          style={{ background: 'var(--adm-accent)' }}
-        >
-          {saving ? 'Saving…' : dirty ? 'Save changes' : 'Saved'}
-        </button>
+        <div className="flex items-center gap-4">
+          <button onClick={() => setShowHistory(true)} className="text-sm" style={{ color: 'var(--adm-text-sm)' }}>
+            History
+          </button>
+          <button
+            onClick={save}
+            disabled={!dirty || saving}
+            className="rounded-lg px-5 py-2 text-sm font-medium text-white transition-opacity disabled:opacity-40"
+            style={{ background: 'var(--adm-accent)' }}
+          >
+            {saving ? 'Saving…' : dirty ? 'Save changes' : 'Saved'}
+          </button>
+        </div>
       </div>
+
+      {showHistory && (
+        <VersionHistory
+          fetchVersions={() => getDocVersions(docKey)}
+          onRestore={(snapshot) => { setData(snapshot); setDirty(true); }}
+          onClose={() => setShowHistory(false)}
+        />
+      )}
 
       <div className="space-y-6 pb-24">
         {Object.entries(data).map(([k, v]) => {

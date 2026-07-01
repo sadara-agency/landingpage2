@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { serviceClient } from '@/lib/supabase/service';
 import { getSessionUser } from '@/lib/supabase/server';
 import { requireFields } from '@/lib/admin/validate';
+import { snapshotVersion, listVersions } from '@/lib/admin/versions';
 
 export type RoleRow = {
   id?: string;
@@ -34,7 +35,7 @@ export async function listAllRoles() {
 }
 
 export async function saveRole(row: RoleRow) {
-  await guard();
+  const user = await guard();
   const db = serviceClient();
 
   const bad = requireFields(row, [
@@ -43,13 +44,23 @@ export async function saveRole(row: RoleRow) {
   ]);
   if (bad) return { ok: false as const, error: bad.error };
 
-  const payload = { ...row, updated_at: new Date().toISOString() };
+  if (row.id) {
+    const { data: current } = await db.from('roles').select('*').eq('id', row.id).single();
+    if (current) await snapshotVersion('role', row.id, current, user.id);
+  }
+
+  const payload = { ...row, updated_by: user.id, updated_at: new Date().toISOString() };
   const res = row.id
     ? await db.from('roles').update(payload).eq('id', row.id)
     : await db.from('roles').insert(payload);
   if (res.error) return { ok: false as const, error: { ar: res.error.message, en: res.error.message } };
   refresh();
   return { ok: true as const };
+}
+
+export async function getRoleVersions(id: string) {
+  await guard();
+  return listVersions('role', id);
 }
 
 export async function deleteRole(id: string) {

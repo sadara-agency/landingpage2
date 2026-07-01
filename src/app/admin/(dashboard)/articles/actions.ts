@@ -5,6 +5,7 @@ import { serviceClient } from '@/lib/supabase/service';
 import { getSessionUser } from '@/lib/supabase/server';
 import { requireFields, validateSlug, checkDuplicateSlug } from '@/lib/admin/validate';
 import { sanitizeHtml } from '@/lib/sanitize';
+import { snapshotVersion, listVersions } from '@/lib/admin/versions';
 
 export type ArticleRow = {
   id?: string;
@@ -42,7 +43,7 @@ export async function listAllArticles() {
 }
 
 export async function saveArticle(row: ArticleRow) {
-  await guard();
+  const user = await guard();
   const db = serviceClient();
 
   const bad =
@@ -57,11 +58,17 @@ export async function saveArticle(row: ArticleRow) {
   const dup = checkDuplicateSlug(row.slug, existing ?? [], row.id);
   if (dup) return { ok: false as const, error: dup.error };
 
+  if (row.id) {
+    const { data: current } = await db.from('articles').select('*').eq('id', row.id).single();
+    if (current) await snapshotVersion('article', row.id, current, user.id);
+  }
+
   const payload = {
     ...row,
     slug: row.slug.trim(),
     body_ar: sanitizeHtml(row.body_ar),
     body_en: sanitizeHtml(row.body_en),
+    updated_by: user.id,
     updated_at: new Date().toISOString(),
   };
   const res = row.id
@@ -70,6 +77,11 @@ export async function saveArticle(row: ArticleRow) {
   if (res.error) return { ok: false as const, error: { ar: res.error.message, en: res.error.message } };
   refresh();
   return { ok: true as const };
+}
+
+export async function getArticleVersions(id: string) {
+  await guard();
+  return listVersions('article', id);
 }
 
 export async function deleteArticle(id: string) {

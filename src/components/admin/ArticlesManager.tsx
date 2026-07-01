@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import {
-  saveArticle, deleteArticle, reorderArticles, type ArticleRow,
+  saveArticle, deleteArticle, reorderArticles, getArticleVersions, type ArticleRow,
 } from '@/app/admin/(dashboard)/articles/actions';
 import { ImageInput } from './ImageInput';
 import { RichTextField } from './RichTextField';
+import { VersionHistory } from './VersionHistory';
 import { errText, SAVED_MSG } from '@/lib/admin/validate';
 import { SaveBar } from './SaveBar';
 
@@ -122,6 +123,7 @@ function ArticleEditor({
   row, onCancel, onSave,
 }: { row: ArticleRow; onCancel: () => void; onSave: (r: ArticleRow) => void }) {
   const [draft, setDraft] = useState<ArticleRow>(row);
+  const [showHistory, setShowHistory] = useState(false);
   const set = (patch: Partial<ArticleRow>) => setDraft((d) => ({ ...d, ...patch }));
 
   const Pair = ({ label, ar, en, keyAr, keyEn, long, rich }: {
@@ -160,7 +162,14 @@ function ArticleEditor({
       >
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{row.id ? 'Edit article' : 'New article'}</h2>
-          <button onClick={onCancel} className="text-2xl" style={{ color: 'var(--adm-text-sm)' }}>✕</button>
+          <div className="flex items-center gap-4">
+            {row.id && (
+              <button onClick={() => setShowHistory(true)} className="text-sm" style={{ color: 'var(--adm-text-sm)' }}>
+                History
+              </button>
+            )}
+            <button onClick={onCancel} className="text-2xl" style={{ color: 'var(--adm-text-sm)' }}>✕</button>
+          </div>
         </div>
 
         <div className="space-y-5">
@@ -227,6 +236,14 @@ function ArticleEditor({
               : undefined
           }
         />
+
+        {showHistory && (
+          <VersionHistory
+            fetchVersions={() => getArticleVersions(row.id!)}
+            onRestore={(snapshot) => setDraft((d) => ({ ...d, ...(snapshot as Partial<ArticleRow>), id: d.id }))}
+            onClose={() => setShowHistory(false)}
+          />
+        )}
       </div>
     </div>
   );

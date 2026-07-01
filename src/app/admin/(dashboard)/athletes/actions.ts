@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { serviceClient } from '@/lib/supabase/service';
 import { getSessionUser } from '@/lib/supabase/server';
 import { requireFields, validateSlug, checkDuplicateSlug } from '@/lib/admin/validate';
+import { snapshotVersion, listVersions } from '@/lib/admin/versions';
 
 export type AthleteRow = {
   id?: string;
@@ -46,7 +47,7 @@ export async function listAllAthletes() {
 }
 
 export async function saveAthlete(row: AthleteRow) {
-  await guard();
+  const user = await guard();
   const db = serviceClient();
 
   const bad =
@@ -61,13 +62,23 @@ export async function saveAthlete(row: AthleteRow) {
   const dup = checkDuplicateSlug(row.slug, existing ?? [], row.id);
   if (dup) return { ok: false as const, error: dup.error };
 
-  const payload = { ...row, slug: row.slug.trim(), updated_at: new Date().toISOString() };
+  if (row.id) {
+    const { data: current } = await db.from('athletes').select('*').eq('id', row.id).single();
+    if (current) await snapshotVersion('athlete', row.id, current, user.id);
+  }
+
+  const payload = { ...row, slug: row.slug.trim(), updated_by: user.id, updated_at: new Date().toISOString() };
   const res = row.id
     ? await db.from('athletes').update(payload).eq('id', row.id)
     : await db.from('athletes').insert(payload);
   if (res.error) return { ok: false as const, error: { ar: res.error.message, en: res.error.message } };
   refresh();
   return { ok: true as const };
+}
+
+export async function getAthleteVersions(id: string) {
+  await guard();
+  return listVersions('athlete', id);
 }
 
 export async function deleteAthlete(id: string) {
